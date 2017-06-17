@@ -977,7 +977,7 @@ static NSSize sTempSavedOffset;
 - (NSInteger)partcodeOppositeKnob:(NSInteger)knobPartCode
 {
 	static NSInteger pc[] = { kDKDrawableShapeRightHandle, kDKDrawableShapeBottomHandle, kDKDrawableShapeLeftHandle, kDKDrawableShapeTopHandle,
-							  kDKDrawableShapeBottomRightHandle, kDKDrawableShapeBottomLeftHandle,
+					 		  kDKDrawableShapeBottomRightHandle, kDKDrawableShapeBottomLeftHandle,
 							  kDKDrawableShapeTopRightHandle, kDKDrawableShapeTopLeftHandle };
 
 	if (knobPartCode > kDKDrawableShapeBottomRightHandle)
@@ -1055,10 +1055,27 @@ static NSSize sTempSavedOffset;
 		DKKnobType knobType = [self knobTypeForPartCode:knobPartCode];
 		NSColor* selColour = (knobType == kDKRotationKnobType || knobType == kDKCentreTargetKnobType) ? nil : [[self layer] selectionColour];
 
-		[knobs drawKnobAtPoint:kp
-						ofType:knobType
-						 angle:[self angle]
-			   highlightColour:selColour];
+        // make the knob stroke color as same as the object's stroke color
+
+        NSColor* knobStrokeColour = nil;
+        NSArray* rs = [self.style renderersOfClass:[DKStroke class]];
+        DKStroke *stroke = [rs lastObject];
+        if(stroke){
+            knobStrokeColour = stroke.colour;
+        }
+
+        if(knobStrokeColour){
+            [knobs drawKnobAtPoint:kp
+                            ofType:knobType
+                             angle:[self angle]
+                   highlightColour:selColour
+                   knobStrokeColor:knobStrokeColour];
+        }else {
+            [knobs drawKnobAtPoint:kp
+                            ofType:knobType
+                             angle:[self angle]
+                   highlightColour:selColour];
+        }
 
 #ifdef qIncludeGraphicDebugging
 		if (m_showPartcodes) {

@@ -55,6 +55,7 @@ might include the shape of a knob, its colours, whether stroked or filled or bot
 - (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType userInfo:(id)userInfo;
 - (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians userInfo:(id)userInfo;
 - (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians highlightColour:(NSColor*)aColour;
+- (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians highlightColour:(NSColor*)aColour knobStrokeColor:(NSColor*)sColour;
 
 - (void)drawControlBarFromPoint:(NSPoint)a toPoint:(NSPoint)b;
 - (void)drawControlBarWithKnobsFromPoint:(NSPoint)a toPoint:(NSPoint)b;

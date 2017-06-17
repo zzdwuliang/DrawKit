@@ -25,6 +25,7 @@
 
 #ifdef qIncludeGraphicDebugging
 #import "DKDrawingView.h"
+#import "DKStroke.h"
 #include <tgmath.h>
 #endif
 
@@ -855,9 +856,17 @@ static NSDictionary* s_interconversionTable = nil;
 {
 	if ([self locked])
 		[[NSColor lightGrayColor] set];
-	else
-		[[[self layer] selectionColour] set];
-
+	else {
+		NSColor* strokeColour = nil;
+		NSArray* rs = [self.style renderersOfClass:[DKStroke class]];
+		DKStroke *stroke = [rs lastObject];
+		if(stroke){
+			strokeColour = stroke.colour;
+			[strokeColour set];
+		}else{
+			[[[self layer] selectionColour] set];
+		}
+	}
 	[path setLineWidth:0.0];
 	[path stroke];
 }

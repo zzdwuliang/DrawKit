@@ -10,7 +10,7 @@
 #import "DKDrawingView.h"
 #import "DKHandle.h"
 
-#define USE_DK_HANDLES 1
+#define USE_DK_HANDLES 0
 
 NSString* kDKKnobPreferredHighlightColour = @"kDKKnobPreferredHighlightColour";
 
@@ -61,13 +61,22 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 
 - (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians highlightColour:(NSColor*)aColour
 {
-	NSAssert(knobType != 0, @"knob type can't be zero");
+    [self drawKnobAtPoint:p
+                   ofType:knobType
+                    angle:radians
+          highlightColour:aColour
+          knobStrokeColor:[self strokeColourForKnobType:knobType]];
+}
+
+- (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians highlightColour:(NSColor *)aColour knobStrokeColor:(NSColor *)sColour
+{
+    NSAssert(knobType != 0, @"knob type can't be zero");
 
 // query the owner to find out whether we're active and what the scale is. If there's no owner set,
 // skip this fancy stuff
 
 #if USE_DK_HANDLES
-	if ([[self owner] respondsToSelector:@selector(knobsWantDrawingActiveState)]) {
+    if ([[self owner] respondsToSelector:@selector(knobsWantDrawingActiveState)]) {
 		BOOL active = [[self owner] knobsWantDrawingActiveState];
 
 		if (!active)
@@ -85,79 +94,80 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 	return;
 #endif
 
-	CGFloat scale = 1.0;
+    CGFloat scale = 1.0;
 
-	if ([self owner] != nil) {
-		scale = [[self owner] knobsWantDrawingScale];
+    if ([self owner] != nil) {
+        scale = [[self owner] knobsWantDrawingScale];
 
-		if (scale <= 0.0)
-			scale = 1.0;
+        if (scale <= 0.0)
+            scale = 1.0;
 
-		[self setControlKnobSizeForViewScale:scale];
+        [self setControlKnobSizeForViewScale:scale];
 
-		BOOL active = [[self owner] knobsWantDrawingActiveState];
+        BOOL active = [[self owner] knobsWantDrawingActiveState];
 
-		if (!active)
-			knobType |= kDKKnobIsInactiveFlag;
-	}
+        if (!active)
+            knobType |= kDKKnobIsInactiveFlag;
+    }
 
-	// if the knob ends up < 1 pixel across on the screen at this scale, don't draw it
+    // if the knob ends up < 1 pixel across on the screen at this scale, don't draw it
 
-	NSSize cns = [self controlKnobSize];
-	CGFloat screenSize = cns.width * scale;
+    NSSize cns = [self controlKnobSize];
+    CGFloat screenSize = cns.width * scale;
 
-	if (screenSize >= 1.0) {
+    if (screenSize >= 1.0) {
 // as a special case for optimised drawing, the square knob type is drawn by a faster method. Also,
 // control point knobs are drawn this way too, which speeds up that case also.
 
 #ifdef FASTER_KNOB_DRAWING
-		if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType || (knobType & kDKKnobTypeMask) == kDKControlPointKnobType) {
-			NSRect fkr = [self controlKnobRectAtPoint:p
-											   ofType:knobType];
+        if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType || (knobType & kDKKnobTypeMask) == kDKControlPointKnobType) {
+            NSRect fkr = [self controlKnobRectAtPoint:p
+                                               ofType:knobType];
 
-			// inset the bounds to allow for half the stroke width to take up that space
+            // inset the bounds to allow for half the stroke width to take up that space
 
-			CGFloat strokeWidth = [self strokeWidthForKnobType:knobType];
-			fkr = NSInsetRect(fkr, cns.width / 16.0f, cns.height / 16.0f);
+            CGFloat strokeWidth = [self strokeWidthForKnobType:knobType];
+            fkr = NSInsetRect(fkr, cns.width / 16.0f, cns.height / 16.0f);
 
-			if (radians != 0.0) {
-				NSAffineTransform* transform = RotationTransform(radians, p);
+            if (radians != 0.0) {
+                NSAffineTransform* transform = RotationTransform(radians, p);
 
-				[NSGraphicsContext saveGraphicsState];
-				[transform concat];
-			}
+                [NSGraphicsContext saveGraphicsState];
+                [transform concat];
+            }
 
-			if (aColour && (knobType & kDKKnobIsDisabledFlag) == 0)
-				[aColour set];
-			else
-				[[self fillColourForKnobType:knobType] set];
+            if (aColour && (knobType & kDKKnobIsDisabledFlag) == 0)
+                [aColour set];
+            else
+                [[self fillColourForKnobType:knobType] set];
 
-			NSRectFill(fkr);
+            NSRectFill(fkr);
 
-			if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType) {
-				[[self strokeColourForKnobType:knobType] set];
-				NSFrameRectWithWidth(fkr, strokeWidth);
+            if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType) {
+                [sColour set];
+                NSFrameRectWithWidth(fkr, strokeWidth);
 
-				if (radians != 0.0)
-					[NSGraphicsContext restoreGraphicsState];
-			}
-		} else
+                if (radians != 0.0)
+                    [NSGraphicsContext restoreGraphicsState];
+            }
+        } else
 #endif
-		{
-			//NSMutableDictionary* userInfo = [[NSMutableDictionary alloc] init];
-			//[userInfo setObject:aColour forKey:kDKKnobPreferredHighlightColour];
+        {
+            //NSMutableDictionary* userInfo = [[NSMutableDictionary alloc] init];
+            //[userInfo setObject:aColour forKey:kDKKnobPreferredHighlightColour];
 
-			NSBezierPath* path = [self knobPathAtPoint:p
-												ofType:knobType
-												 angle:radians
-											  userInfo:nil];
-			[self drawKnobPath:path
-						ofType:knobType
-					  userInfo:nil];
-			//[userInfo release];
-		}
-	}
+            NSBezierPath* path = [self knobPathAtPoint:p
+                                                ofType:knobType
+                                                 angle:radians
+                                              userInfo:nil];
+            [self drawKnobPath:path
+                        ofType:knobType
+                      userInfo:nil];
+            //[userInfo release];
+        }
+    }
 }
+
 
 - (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians userInfo:(id)userInfo
 {
