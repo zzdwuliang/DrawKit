@@ -1963,12 +1963,12 @@ static NSSize sTempSavedOffset;
 				// the other knobs and any hotspots are not drawn when in a locked state
 
 				if (![self locked]) {
-					[self drawKnob:kDKDrawableShapeRotationHandle];
+//					[self drawKnob:kDKDrawableShapeRotationHandle];
 
 					// draw the shape's origin target
 
-					if (!m_hideOriginTarget)
-						[self drawKnob:kDKDrawableShapeOriginTarget];
+//					if (!m_hideOriginTarget)
+//						[self drawKnob:kDKDrawableShapeOriginTarget];
 
 					// draw the hotspots
 
@@ -2022,15 +2022,15 @@ static NSSize sTempSavedOffset;
 	NSInteger knob;
 
 	if ([self operationMode] == kDKShapeTransformStandard) {
-		knobType = [self knobTypeForPartCode:kDKDrawableShapeOriginTarget];
-
-		if (([[self class] knobMask] & kDKDrawableShapeOriginTarget) == kDKDrawableShapeOriginTarget) {
-			if ([knobs hitTestPoint:pt
-					  inKnobAtPoint:[self knobPoint:kDKDrawableShapeOriginTarget]
-							 ofType:knobType
-						   userInfo:nil])
-				return kDKDrawableShapeOriginTarget;
-		}
+//		knobType = [self knobTypeForPartCode:kDKDrawableShapeOriginTarget];
+//
+//		if (([[self class] knobMask] & kDKDrawableShapeOriginTarget) == kDKDrawableShapeOriginTarget) {
+//			if ([knobs hitTestPoint:pt
+//					  inKnobAtPoint:[self knobPoint:kDKDrawableShapeOriginTarget]
+//							 ofType:knobType
+//						   userInfo:nil])
+//				return kDKDrawableShapeOriginTarget;
+//		}
 
 		knob = kDKDrawableShapeBottomRightHandle;
 		knobType = [self knobTypeForPartCode:knob];
@@ -2056,15 +2056,15 @@ static NSSize sTempSavedOffset;
 			knob >>= 1;
 		}
 
-		knobType = [self knobTypeForPartCode:kDKDrawableShapeRotationHandle];
-
-		if (([[self class] knobMask] & kDKDrawableShapeRotationHandle) == kDKDrawableShapeRotationHandle) {
-			if ([knobs hitTestPoint:pt
-					  inKnobAtPoint:[self knobPoint:kDKDrawableShapeRotationHandle]
-							 ofType:knobType
-						   userInfo:nil])
-				return kDKDrawableShapeRotationHandle;
-		}
+//		knobType = [self knobTypeForPartCode:kDKDrawableShapeRotationHandle];
+//
+//		if (([[self class] knobMask] & kDKDrawableShapeRotationHandle) == kDKDrawableShapeRotationHandle) {
+//			if ([knobs hitTestPoint:pt
+//					  inKnobAtPoint:[self knobPoint:kDKDrawableShapeRotationHandle]
+//							 ofType:knobType
+//						   userInfo:nil])
+//				return kDKDrawableShapeRotationHandle;
+//		}
 		// check for hits in hotspots
 
 		DKHotspot* hs = [self hotspotUnderMouse:pt];

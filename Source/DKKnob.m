@@ -128,6 +128,7 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 
             CGFloat strokeWidth = [self strokeWidthForKnobType:knobType];
             fkr = NSInsetRect(fkr, cns.width / 16.0f, cns.height / 16.0f);
+			NSBezierPath *knobPath = [NSBezierPath bezierPathWithOvalInRect:fkr];
 
             if (radians != 0.0) {
                 NSAffineTransform* transform = RotationTransform(radians, p);
@@ -141,11 +142,14 @@ static NSSize sKnobSize = { 6.0, 6.0 };
             else
                 [[self fillColourForKnobType:knobType] set];
 
-            NSRectFill(fkr);
+//            NSRectFill(fkr);
+			[knobPath fill];
 
             if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType) {
                 [sColour set];
-                NSFrameRectWithWidth(fkr, strokeWidth);
+//                NSFrameRectWithWidth(fkr, strokeWidth);
+				[knobPath setLineWidth:strokeWidth];
+				[knobPath stroke];
 
                 if (radians != 0.0)
                     [NSGraphicsContext restoreGraphicsState];
@@ -954,6 +958,12 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 	return hr;
 }
 
+/**
+ * Get the rectangle control knob by point and knob type
+ * @param kp
+ * @param knobType
+ * @return the NSRect represent the rectangle control
+ */
 - (NSRect)controlKnobRectAtPoint:(NSPoint)kp ofType:(DKKnobType)knobType
 {
 	NSRect kr = [self controlKnobRectAtPoint:kp];
