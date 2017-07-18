@@ -361,3 +361,4 @@ Text shapes are shapes that draw text.
 
 extern NSString* kDKTextOverflowIndicatorDefaultsKey;
 extern NSString* kDKTextAllowsInlineImagesDefaultsKey;
+extern int DKTextMargin;

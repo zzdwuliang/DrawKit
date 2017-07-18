@@ -21,6 +21,7 @@ static NSString* kDKBasicTextStyleDefaultKey = @"326CF635-7863-42C6-900D-CFFC7D5
 {
 	// default text style is a singleton with no fill or stroke, Helvetica 18 regular centred text
 
+	// 这里的改动不影响DKTextShape
 	DKStyle* dts = [DKStyleRegistry styleForKey:kDKBasicTextStyleDefaultKey];
 
 	if (dts == nil) {

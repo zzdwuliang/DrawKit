@@ -86,9 +86,12 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 				forKey:NSFontAttributeName];
 
 		NSMutableParagraphStyle* ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-		[ps setAlignment:NSCenterTextAlignment];
+		[ps setAlignment:NSLeftTextAlignment];
 		[dta setObject:ps
 				forKey:NSParagraphStyleAttributeName];
+        [dta setObject:@(0)
+                forKey:NSBaselineOffsetAttributeName];
+
 		[ps release];
 
 		NSColor* tc = [NSColor blackColor];
@@ -1154,6 +1157,8 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 				osize.width = 50000;
 
 			[bc setBezierPath:nil];
+			extern int DKTextMargin;
+			osize.width -= DKTextMargin*2;
 			[bc setContainerSize:osize];
 		}
 
@@ -1198,6 +1203,10 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 									atPoint:textOrigin];
 			[lm drawGlyphsForGlyphRange:grange
 								atPoint:textOrigin];
+
+			//draw for test
+//			[[NSColor greenColor] set];
+//			CGContextStrokeRect([NSGraphicsContext currentContext].CGContext,NSMakeRect(textOrigin.x, textOrigin.y, bc.containerSize.width, bc.containerSize.height) );
 		}
 		[contents removeLayoutManager:lm];
 	}

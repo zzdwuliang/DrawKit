@@ -1319,7 +1319,7 @@ static void dragFunction_mouseUp(const void* obj, void* context)
 	self = [super init];
 	if (self != nil) {
 		[self setMarqueeStyle:[[self class] defaultMarqueeStyle]];
-		mHideSelectionOnDrag = YES;
+		mHideSelectionOnDrag = NO;
 		mAllowMultiObjectDrag = YES;
 		mAllowDirectCopying = YES;
 		mProxyDragThreshold = kDKSelectToolDefaultProxyDragThreshold;

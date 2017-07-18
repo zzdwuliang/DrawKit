@@ -75,7 +75,7 @@ static BOOL sSubstitute = NO;
 	DKStyle* basic = [DKStyleRegistry styleForKey:kDKBasicStyleDefaultKey];
 
 	if (basic == nil) {
-		basic = [self styleWithFillColour:[NSColor veryLightGrey]
+		basic = [self styleWithFillColour:nil
 							 strokeColour:[NSColor blackColor]];
 		[basic setName:NSLocalizedString(@"Basic", @"default name for basic style")];
 

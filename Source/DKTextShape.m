@@ -22,9 +22,11 @@
 #import "NSAttributedString+DKAdditions.h"
 #import "DKKnob.h"
 #import "DKDrawableShape+Utilities.h"
+#import "DKDrawKit.h"
 
 NSString* kDKTextOverflowIndicatorDefaultsKey = @"DKTextOverflowIndicator";
 NSString* kDKTextAllowsInlineImagesDefaultsKey = @"DKTextAllowsInlineImages";
+int DKTextMargin = 5;//TODO text margin when being edit and show
 
 #pragma mark Static Vars
 
@@ -347,8 +349,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	NSRect br = [self bounds];
 	NSSize size;
 
-	size.width = MAX(400.0, (br.size.width * 5));
-	size.height = (br.size.height * 10);
+//	size.width = MAX(400.0, (br.size.width * 5));
+//	size.height = (br.size.height * 10);
+	size.width = 10000;
+	size.height = 10000;
 	return size;
 }
 
@@ -704,9 +708,11 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 		NSSize minsize = [self minSize];
 
 		NSRect br = [self logicalBounds];
-		CGFloat offset = [[self textAdornment] verticalTextOffsetForObject:self];
 
-		br.origin.y += offset;
+//        br= NSMakeRect(self.location.x-self.size.width/2, self.location.y-self.size.height/2, self.size.width, self.size.height);
+//		CGFloat offset = [[self textAdornment] verticalTextOffsetForObject:self];
+
+//		br.origin.y += offset;
 
 		m_editorRef = [view editText:[[self textAdornment] textForEditing]
 							  inRect:br
@@ -716,18 +722,27 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 		[m_editorRef setImportsGraphics:[[self class] allowsInlineImages]];
 
 		if (NSWidth(br) > minsize.width + 1.0) {
-			[[m_editorRef textContainer] setContainerSize:NSMakeSize(NSWidth(br), maxsize.height)];
-			[m_editorRef setHorizontallyResizable:NO];
+            [[m_editorRef textContainer] setContainerSize:maxsize];
+			[[m_editorRef textContainer] setWidthTracksTextView:NO];
+			[m_editorRef setVerticallyResizable:YES];
+			[m_editorRef setHorizontallyResizable:YES];
 		} else {
 			[[m_editorRef textContainer] setContainerSize:maxsize];
 			[m_editorRef setHorizontallyResizable:YES];
 		}
 
-		[m_editorRef setMinSize:minsize];
-		[m_editorRef setMaxSize:maxsize];
+//		[m_editorRef setMinSize:minsize];
+//		[m_editorRef setMaxSize:maxsize];
 		[[m_editorRef textContainer] setHeightTracksTextView:NO];
 		[m_editorRef setVerticallyResizable:YES];
 		[m_editorRef setTypingAttributes:[self textAttributes]];
+
+		//draw the NSTextView's border for test
+//        m_editorRef.wantsLayer=YES;
+//        m_editorRef.layer.borderWidth = 1;
+//        m_editorRef.layer.borderColor = [NSColor greenColor].CGColor;
+		[self textDidChange:nil];
+		[self notifyVisualChange];
 	}
 }
 
@@ -748,7 +763,6 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 - (BOOL)isEditing
 {
 	// returns YES if editing currently in progress - valid during drawing only
-
 	return (m_editorRef && ([m_editorRef superview] == [[self drawing] currentView]) && [[NSGraphicsContext currentContext] isDrawingToScreen]);
 }
 
@@ -1166,6 +1180,11 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	return dp;
 }
 
+- (void)drawKnob:(NSInteger)knobPartCode {
+	//do nothing, casuse we don't wnat the knob to be drawn
+}
+
+
 #define SCALE_TEXT_WHEN_UNGROUPING 1
 
 #if SCALE_TEXT_WHEN_UNGROUPING
@@ -1183,6 +1202,13 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 #pragma mark -
 #pragma mark As a DKDrawableObject
+
++ (NSInteger)initialPartcodeForObjectCreation {
+	//override to make the object's size not be operate when being created
+	
+	return kDKDrawingNoPart;
+}
+
 
 - (id)initWithStyle:(DKStyle*)aStyle
 {
@@ -1228,15 +1254,18 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 {
 	NSInteger part = [super hitPart:pt];
 
-	if (part == kDKDrawingNoPart) {
-		// check if contained by the path (regardless of style fill, etc) - this is
-		// done to make text objects generally easier to hit since they frequently may
-		// have sparse pixels, or none at all.
+//	if (part == kDKDrawingNoPart) {
+//		// check if contained by the path (regardless of style fill, etc) - this is
+//		// done to make text objects generally easier to hit since they frequently may
+//		// have sparse pixels, or none at all.
+//
+//		if ([[self renderingPath] containsPoint:pt])
+//			part = kDKDrawingEntireObjectPart;
+//	}
 
-		if ([[self renderingPath] containsPoint:pt])
-			part = kDKDrawingEntireObjectPart;
-	}
-
+	// make the object can only be moved
+	part = kDKDrawingEntireObjectPart;
+	
 	return part;
 }
 
@@ -1263,6 +1292,7 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 {
 	// draw a "more text" indicator if the current text can't be fully laid out in the box
 
+	/*
 	if (![[self textAdornment] allTextWasFitted] && [[self class] showsTextOverflowIndicator]) {
 		DKKnob* knob = [[self layer] knobs];
 		NSSize knobSize = [knob controlKnobSize];
@@ -1281,6 +1311,13 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 		else
 			[[[self layer] selectionColour] set];
 		[np fill];
+	}
+	*/
+
+	if(!NSEqualSizes(NSZeroSize, [self size])){
+		[[NSColor blackColor] set];
+		//inset the rect to ensure drawing refresh all the content
+		CGContextStrokeRect([NSGraphicsContext currentContext].CGContext, NSInsetRect(self.bounds, 1, 1));
 	}
 
 	[super drawSelectedState];
@@ -1430,8 +1467,9 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	if (size.height <= 0 || size.width <= 0) {
 		NSSize offset = [self offset];
 		[self setDragAnchorToPart:kDKDrawableShapeObjectCentre];
-		[self setSize:NSMakeSize(250, [self fontSize] + 6)];
+//		[self setSize:NSMakeSize([self fontSize], [self fontSize])];
 		[self setOffset:offset];
+		[self setLocation:p];
 
 		//[self setText:@""];
 		[self editText:self];
@@ -1638,6 +1676,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 #pragma mark -
 #pragma mark As a NSTextView delegate
+- (void)textDidBeginEditing:(NSNotification*)aNotification
+{
+#pragma unused(aNotification)
+}
 
 - (void)textDidEndEditing:(NSNotification*)aNotification
 {
@@ -1648,6 +1690,18 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 - (void)textWillChange:(NSNotification*)note
 {
 #pragma unused(note)
+}
+
+- (void)textDidChange:(NSNotification *)notification
+{
+#pragma unused(aNotification)
+	[m_editorRef.layoutManager ensureLayoutForTextContainer:m_editorRef.layoutManager.textContainers.lastObject];
+	NSRect rect = [m_editorRef.layoutManager usedRectForTextContainer:m_editorRef.layoutManager.textContainers.lastObject];
+	m_editorRef.frame = NSMakeRect(m_editorRef.frame.origin.x, m_editorRef.frame.origin.y, rect.size.width, rect.size.height);
+	NSPoint p = m_editorRef.frame.origin;
+	NSSize s = m_editorRef.frame.size;
+	[self setLocation:NSMakePoint(p.x+s.width/2, p.y+s.height/2)];
+	[self setSize:NSMakeSize(s.width, s.height)];
 }
 
 - (BOOL)textView:(NSTextView*)tv doCommandBySelector:(SEL)selector

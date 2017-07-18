@@ -540,17 +540,18 @@ static Class s_textEditorClass = Nil;
 	// editor's frame is expanded by five points to ensure all characters are visible when not using screen fonts
 	// container text inset is set to compensate for this.
 
-	NSRect editorFrame = NSInsetRect(rect, -5, -5);
+//	NSRect editorFrame = NSInsetRect(rect, -5, -5);
+	NSRect editorFrame = rect;
 
 	if (m_textEditViewRef == nil)
 		m_textEditViewRef = [[[[self class] classForTextEditor] alloc] initWithFrame:editorFrame];
 	else {
 		[m_textEditViewRef setDelegate:nil];
-		[m_textEditViewRef setFrame:editorFrame];
-		[m_textEditViewRef setSelectedRange:NSMakeRange(0, 0)];
+        if(text.length <= 0)
+            [m_textEditViewRef setSelectedRange:NSMakeRange(0, 0)];
+        else
+            [m_textEditViewRef setSelectedRange:NSMakeRange(text.length, 0)];
 	}
-
-	[m_textEditViewRef setAllowsUndo:NO];
 
 	NSLayoutManager* lm = [m_textEditViewRef layoutManager];
 
@@ -576,11 +577,10 @@ static Class s_textEditorClass = Nil;
 	[lm setUsesScreenFonts:NO];
 
 	[m_textEditViewRef setDrawsBackground:drawBkGnd];
-	[m_textEditViewRef setFieldEditor:YES];
-	[m_textEditViewRef setSelectedRange:NSMakeRange(0, [text length])];
+//	[m_textEditViewRef setFieldEditor:YES];
 	[m_textEditViewRef setDelegate:del];
 	[m_textEditViewRef setNextResponder:self];
-	[m_textEditViewRef setTextContainerInset:NSMakeSize(5, 5)];
+//	[m_textEditViewRef setTextContainerInset:NSMakeSize(5, 5)];
 
 	// if smart quotes is supported, set the editor to use the current preference. This feature requires 10.5 or later
 
@@ -604,6 +604,7 @@ static Class s_textEditorClass = Nil;
 	[self addSubview:m_textEditViewRef];
 	[[self window] makeFirstResponder:m_textEditViewRef];
 
+	[m_textEditViewRef setFrame:editorFrame];// set the frame after added to the view
 	[m_textEditViewRef setNeedsDisplay:YES];
 
 	[[NSNotificationCenter defaultCenter] postNotificationName:kDKDrawingViewDidBeginTextEditing
