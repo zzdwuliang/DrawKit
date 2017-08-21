@@ -1532,7 +1532,8 @@ static void InterpolatePoints(const NSPoint* v, NSPoint* cp1, NSPoint* cp2, cons
 				break;
 
 			case NSLineToBezierPathElement:
-				CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
+				if(!isnan(points[0].x) && !isnan(points[0].y))
+					CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
 				break;
 
 			case NSCurveToBezierPathElement:

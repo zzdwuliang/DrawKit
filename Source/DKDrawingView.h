@@ -45,6 +45,8 @@ typedef enum {
 	NSDictionary* mRulerMarkersDict; /**< tracks ruler markers */
 }
 
+@property NSRect clipRect;
+
 /** @brief Return the view currently drawing
 
  This is only valid during a drawRect: call - some internal parts of DK use this to obtain the

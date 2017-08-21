@@ -430,36 +430,36 @@ static void dragFunction_mouseUp(const void* obj, void* context)
 	// if the mouse has left the layer's drag exclusion rect, this starts a drag of the objects as a "real" drag. Test for that here
 	// and initiate the drag if needed. The drag will keep control until the items are dropped.
 
-	if (ph == kDKDragMouseDragged) {
-		NSRect der = [layer dragExclusionRect];
-		if (!NSPointInRect(p, der)) {
-			[layer beginDragOfSelectedObjectsWithEvent:event
-												inView:[layer currentView]];
-			if ([self selectionShouldHideDuringDrag])
-				[layer setSelectionVisible:YES];
-
-			// the drag will have clobbered the mouse up, but we need to post one to ensure that the sequence is correctly terminated.
-			// this is particularly important for managing undo groups, which are exceedingly finicky.
-
-			NSWindow* window = [event window];
-
-			NSEvent* fakeMouseUp = [NSEvent mouseEventWithType:NSLeftMouseUp
-													  location:[event locationInWindow]
-												 modifierFlags:0
-													 timestamp:[NSDate timeIntervalSinceReferenceDate]
-												  windowNumber:[window windowNumber]
-													   context:[NSGraphicsContext currentContext]
-												   eventNumber:0
-													clickCount:1
-													  pressure:0.0];
-
-			[window postEvent:fakeMouseUp
-					  atStart:YES];
-
-			//NSLog(@"returning from drag source operation, phase = %d", ph);
-			return;
-		}
-	}
+//	if (ph == kDKDragMouseDragged) {
+//		NSRect der = [layer dragExclusionRect];
+//		if (!NSPointInRect(p, der)) {
+//			[layer beginDragOfSelectedObjectsWithEvent:event
+//												inView:[layer currentView]];
+//			if ([self selectionShouldHideDuringDrag])
+//				[layer setSelectionVisible:YES];
+//
+//			// the drag will have clobbered the mouse up, but we need to post one to ensure that the sequence is correctly terminated.
+//			// this is particularly important for managing undo groups, which are exceedingly finicky.
+//
+//			NSWindow* window = [event window];
+//
+//			NSEvent* fakeMouseUp = [NSEvent mouseEventWithType:NSLeftMouseUp
+//													  location:[event locationInWindow]
+//												 modifierFlags:0
+//													 timestamp:[NSDate timeIntervalSinceReferenceDate]
+//												  windowNumber:[window windowNumber]
+//													   context:[NSGraphicsContext currentContext]
+//												   eventNumber:0
+//													clickCount:1
+//													  pressure:0.0];
+//
+//			[window postEvent:fakeMouseUp
+//					  atStart:YES];
+//
+//			//NSLog(@"returning from drag source operation, phase = %d", ph);
+//			return;
+//		}
+//	}
 
 	BOOL multipleObjects = [objects count] > 1;
 	BOOL controlKey = ([event modifierFlags] & NSControlKeyMask) != 0;

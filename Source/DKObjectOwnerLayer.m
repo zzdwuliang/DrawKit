@@ -1393,6 +1393,7 @@ static DKLayerCacheOption sDefaultCacheOption = kDKLayerCacheNone;
 
 			LogEvent_(kUserEvent, @"found hit = %@", o);
 
+			[[self storage] moveObject:o toIndex:[self countOfObjects] - 1];
 			return o;
 		}
 	}

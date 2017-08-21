@@ -44,7 +44,7 @@ The appearance of a hotspot is drawn by default by a method of DKKnob.
 @end
 
 enum {
-	kDKHotspotBasePartcode = 32768
+	kDKHotspotBasePartcode = 32768// 0x01 << 15
 };
 
 #pragma mark -

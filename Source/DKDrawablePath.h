@@ -53,6 +53,7 @@ maintain the concept of rotation or scale - it just is what it is.
 	NSInteger m_editPathMode;
 	CGFloat m_freehandEpsilon;
 	BOOL m_extending;
+	BOOL m_enableKnob;
 }
 
 // convenience constructors:
@@ -253,6 +254,9 @@ maintain the concept of rotation or scale - it just is what it is.
 /** @brief Gets the "mode" of operation for creating new path objects
  */
 - (DKDrawablePathCreationMode)pathCreationMode;
+
+- (void)setEnableKnob:(BOOL)drawKnob;
+- (BOOL)enableKnob;
 
 /** @brief Test for the ending criterion of a path loop
 

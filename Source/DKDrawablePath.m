@@ -17,6 +17,7 @@
 #import "CurveFit.h"
 #import "LogEvent.h"
 #include <tgmath.h>
+#import <DKDrawKit/DKDrawKit.h>
 
 #pragma mark Global Vars
 NSPoint gMouseForPathSnap = { 0, 0 };
@@ -253,14 +254,14 @@ static NSColor* sInfoWindowColour = nil;
 						[knobs drawControlBarFromPoint:ap[0]
 											   toPoint:lp];
 
-					[knobs drawKnobAtPoint:lp
+					[self drawKnobAtPoint:lp
 									ofType:knobType
-								  userInfo:nil];
+								  withKnobs:knobs];
 
 					if (i == ec - 1)
-						[knobs drawKnobAtPoint:ap[2]
+						[self drawKnobAtPoint:ap[2]
 										ofType:knobType
-									  userInfo:nil];
+									  withKnobs:knobs];
 				}
 			}
 
@@ -269,12 +270,12 @@ static NSColor* sInfoWindowColour = nil;
 			knobType = kDKControlPointKnobType;
 
 			if (![self locked]) {
-				[knobs drawKnobAtPoint:ap[0]
+				[self drawKnobAtPoint:ap[0]
 								ofType:knobType
-							  userInfo:nil];
-				[knobs drawKnobAtPoint:ap[1]
+							  withKnobs:knobs];
+				[self drawKnobAtPoint:ap[1]
 								ofType:knobType
-							  userInfo:nil];
+							  withKnobs:knobs];
 			}
 
 			knobType = kDKOnPathKnobType;
@@ -289,15 +290,15 @@ static NSColor* sInfoWindowColour = nil;
 						[knobs drawControlBarFromPoint:ap[0]
 											   toPoint:lp];
 
-					[knobs drawKnobAtPoint:lp
+					[self drawKnobAtPoint:lp
 									ofType:knobType
-								  userInfo:nil];
+								  withKnobs:knobs];
 				}
 
 				if (i == ec - 1)
-					[knobs drawKnobAtPoint:ap[2]
+					[self drawKnobAtPoint:ap[2]
 									ofType:knobType
-								  userInfo:nil];
+								  withKnobs:knobs];
 			}
 
 			lp = ap[2];
@@ -327,13 +328,13 @@ static NSColor* sInfoWindowColour = nil;
 					knobType |= kDKKnobIsDisabledFlag;
 
 				if (!NSEqualPoints(lp, NSMakePoint(-1, -1)))
-					[knobs drawKnobAtPoint:lp
-									ofType:knobType
-								  userInfo:nil];
+					[self drawKnobAtPoint:lp
+								   ofType:knobType
+								withKnobs:knobs];
 
-				[knobs drawKnobAtPoint:ap[0]
-								ofType:knobType
-							  userInfo:nil];
+				[self drawKnobAtPoint:ap[0]
+							   ofType:knobType
+							withKnobs:knobs];
 			}
 			lp = ap[0];
 
@@ -349,6 +350,16 @@ static NSColor* sInfoWindowColour = nil;
 #endif
 		}
 	}
+}
+
+-(void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)type withKnobs:(DKKnob *)knobs{
+	[knobs drawKnobAtPoint:p
+					ofType:type
+					 angle:[self angle]
+		   highlightColour:[NSColor whiteColor]
+			knobStrokeColor:[NSColor blackColor]];
+//		   knobStrokeColor:[[self style] strokeColour]];
+
 }
 
 /** @brief Given a set of rects as NSValue objects, this invalidates them
@@ -732,6 +743,14 @@ static NSColor* sInfoWindowColour = nil;
 	return m_editPathMode;
 }
 
+- (void)setEnableKnob:(BOOL)drawKnob{
+	m_enableKnob = drawKnob;
+}
+
+- (BOOL)enableKnob{
+	return m_enableKnob;
+}
+
 #pragma mark -
 
 /** @brief Event loop for creating a curved path point by point
@@ -999,7 +1018,7 @@ finish:
 			// if the final point is in the same place as the first point, do a click-drag-click creation. Otherwise
 			// we've already dragged so finish.
 
-			if (!NSEqualPoints(p, ip)) {
+			if(sqrt(pow((p.x-ip.x), 2) + pow((p.y-ip.y), 2)) > 5){
 				loop = NO;
 			}
 			break;
@@ -1225,10 +1244,10 @@ finish:
 		p = [view convertPoint:[theEvent locationInWindow]
 					  fromView:nil];
 
-		BOOL shiftKey = ([theEvent modifierFlags] & NSShiftKeyMask) != 0;
-
-		p = [self snappedMousePoint:p
-					withControlFlag:shiftKey];
+//		BOOL shiftKey = ([theEvent modifierFlags] & NSShiftKeyMask) != 0;
+//
+//		p = [self snappedMousePoint:p
+//					withControlFlag:shiftKey];
 
 		switch ([theEvent type]) {
 		case NSLeftMouseDown:
@@ -1241,7 +1260,7 @@ finish:
 #ifdef qUseCurveFit
 				[self setPath:curveFitPath(path, m_freehandEpsilon)];
 #else
-				[self invalidateCache];
+//				[self invalidateCache];
 				[self notifyVisualChange];
 #endif
 				lastPoint = p;
@@ -1331,7 +1350,7 @@ finish:
 		constrain = (([theEvent modifierFlags] & NSShiftKeyMask) != 0);
 
 		if (constrain) {
-			// slope of line is forced to be on 15¬¨¬®‚Äö√†√ª intervals
+			// slope of line is forced to be on 15° intervals
 
 			CGFloat angle = atan2f(p.y - lp.y, p.x - lp.x);
 			CGFloat rem = fmod(angle, sAngleConstraint);
@@ -1960,6 +1979,7 @@ finish:
  */
 - (IBAction)curveFit:(id) __unused sender
 {
+#ifdef qUseCurveFit
 	if (![self locked]) {
 		
 		// Extracted from NSBezierPath+GPC in 1.5b of DrawKit
@@ -1974,6 +1994,7 @@ finish:
 			[[self undoManager] setActionName:NSLocalizedString(@"Curve Fit", @"undo action for Curve Fit")];
 		}
 	}
+#endif
 }
 
 /** @brief Reverses the direction of the object's path
@@ -2088,6 +2109,7 @@ finish:
 	if (self) {
 		m_freehandEpsilon = 2.0;
 		m_editPathMode = kDKPathCreateModeEditExisting;
+		m_enableKnob = YES;
 	}
 
 	return self;
@@ -2154,7 +2176,7 @@ finish:
 		// for easier hit-testing of very thin or offset paths, the path is stroked using a
 		// centre-aligned 4pt or greater stroke. This is substituted on the fly here and never visible to the user.
 
-		CGFloat strokeWidth = MAX(4, [[self style] maxStrokeWidth]);
+		CGFloat strokeWidth = MAX(10, [[self style] maxStrokeWidth]);
 
 		BOOL hasFill = [[self style] hasFill] || [[self style] hasHatch];
 
@@ -2177,8 +2199,10 @@ finish:
 		NSBezierPath* path = [self renderingPath];
 
 		[self drawSelectionPath:path];
-		[self drawControlPointsOfPath:path
-						   usingKnobs:[[self layer] knobs]];
+
+		if(m_enableKnob)
+			[self drawControlPointsOfPath:path
+							   usingKnobs:[[self layer] knobs]];
 
 #ifdef qIncludeGraphicDebugging
 		if (m_showBBox)
@@ -2244,6 +2268,9 @@ finish:
  @return an integer value, the partcode hit. */
 - (NSInteger)hitSelectedPart:(NSPoint)pt forSnapDetection:(BOOL)snap
 {
+    if(!m_enableKnob)
+        return kDKDrawingEntireObjectPart;
+
 	CGFloat tol = [[[self layer] knobs] controlKnobSize].width;
 
 	if (snap)
@@ -2321,19 +2348,17 @@ finish:
 		case kDKPathCreateModePolygonCreate:
 			[self polyCreateLoop:mp];
 			break;
-#ifdef qUseCurveFit
 		case kDKPathCreateModeFreehandCreate: {
 			CGFloat savedFHE = [self freehandSmoothing];
 
-			BOOL option = ([evt modifierFlags] & NSAlternateKeyMask) != 0;
+//			BOOL option = ([evt modifierFlags] & NSAlternateKeyMask) != 0;
 
-			if (option)
-				[self setFreehandSmoothing:10 * savedFHE];
+//			if (option)
+//				[self setFreehandSmoothing:10 * savedFHE];
 
 			[self freehandCreateLoop:mp];
 			[self setFreehandSmoothing:savedFHE];
 		} break;
-#endif
 		case kDKPathCreateModeWedgeSegment:
 		case kDKPathCreateModeArcSegment:
 			[self arcCreateLoop:mp];
@@ -2680,6 +2705,7 @@ finish:
 	[pc release];
 
 	[copy setPathCreationMode:[self pathCreationMode]];
+	[copy setEnableKnob:[self enableKnob]];
 
 	return copy;
 }

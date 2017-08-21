@@ -1068,7 +1068,7 @@ static NSSize sTempSavedOffset;
             [knobs drawKnobAtPoint:kp
                             ofType:knobType
                              angle:[self angle]
-                   highlightColour:selColour
+                   highlightColour:[NSColor whiteColor]
                    knobStrokeColor:knobStrokeColour];
         }else {
             [knobs drawKnobAtPoint:kp
@@ -1913,7 +1913,7 @@ static NSSize sTempSavedOffset;
 		BOOL hasStroke = [[self style] hasStroke];
 		BOOL hasFill = !hasStroke || [[self style] hasFill] || [[self style] hasHatch];
 
-		CGFloat strokeWidth = hasStroke ? MAX(2, [[self style] maxStrokeWidth]) : 0;
+		CGFloat strokeWidth = hasStroke ? MAX(10, [[self style] maxStrokeWidth]) : 0;
 
 		DKStyle* temp = [DKStyle styleWithFillColour:hasFill ? [NSColor blackColor] : nil
 										strokeColour:hasStroke ? [NSColor blackColor] : nil
@@ -1921,6 +1921,7 @@ static NSSize sTempSavedOffset;
 		[temp render:self];
 	} else
 		[super drawContent];
+//	NSFrameRectWithWidth(self.bounds, 0);
 }
 
 /**

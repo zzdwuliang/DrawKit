@@ -547,10 +547,6 @@ static Class s_textEditorClass = Nil;
 		m_textEditViewRef = [[[[self class] classForTextEditor] alloc] initWithFrame:editorFrame];
 	else {
 		[m_textEditViewRef setDelegate:nil];
-        if(text.length <= 0)
-            [m_textEditViewRef setSelectedRange:NSMakeRange(0, 0)];
-        else
-            [m_textEditViewRef setSelectedRange:NSMakeRange(text.length, 0)];
 	}
 
 	NSLayoutManager* lm = [m_textEditViewRef layoutManager];
@@ -581,6 +577,11 @@ static Class s_textEditorClass = Nil;
 	[m_textEditViewRef setDelegate:del];
 	[m_textEditViewRef setNextResponder:self];
 //	[m_textEditViewRef setTextContainerInset:NSMakeSize(5, 5)];
+
+	if(text.length <= 0)
+		[m_textEditViewRef setSelectedRange:NSMakeRange(0, 0)];
+	else
+		[m_textEditViewRef setSelectedRange:NSMakeRange(text.length, 0)];
 
 	// if smart quotes is supported, set the editor to use the current preference. This feature requires 10.5 or later
 
@@ -985,7 +986,11 @@ static Class s_textEditorClass = Nil;
  */
 - (void)drawRect:(NSRect)rect
 {
+//	NSLog(@"DKDrawingView drawRect rect:%@", NSStringFromRect(rect));
 	// draw the entire content of the drawing:
+	if(!NSIsEmptyRect(self.clipRect)){
+		[[NSBezierPath bezierPathWithRect:self.clipRect] setClip];
+	}
 
 	[self set];
 	[[self drawing] drawRect:rect
@@ -1026,10 +1031,10 @@ static Class s_textEditorClass = Nil;
 /** @brief Is the view opaque, yes.
  @return always YES
  */
-- (BOOL)isOpaque
-{
-	return YES;
-}
+//- (BOOL)isOpaque
+//{
+//	return YES;
+//}
 
 /** @brief Invalidate the cursor rects and set up new ones
 
@@ -1427,5 +1432,17 @@ static Class s_textEditorClass = Nil;
 												 name:NSWindowDidBecomeMainNotification
 											   object:[self window]];
 }
+
+- (nullable NSView *)hitTest:(NSPoint)point {
+//	return nil;
+	NSView * view = [super hitTest:point];
+//	NSLog(@"hittest view:%@",view);
+	return view;
+}
+
+//- (BOOL)becomeFirstResponder {
+//	return NO;
+//}
+
 
 @end

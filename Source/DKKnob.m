@@ -68,6 +68,10 @@ static NSSize sKnobSize = { 6.0, 6.0 };
           knobStrokeColor:[self strokeColourForKnobType:knobType]];
 }
 
+/**
+ * @param aColour knob's color
+ * @param sColour knob's stoker color
+ */
 - (void)drawKnobAtPoint:(NSPoint)p ofType:(DKKnobType)knobType angle:(CGFloat)radians highlightColour:(NSColor *)aColour knobStrokeColor:(NSColor *)sColour
 {
     NSAssert(knobType != 0, @"knob type can't be zero");
@@ -120,7 +124,11 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 // control point knobs are drawn this way too, which speeds up that case also.
 
 #ifdef FASTER_KNOB_DRAWING
-        if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType || (knobType & kDKKnobTypeMask) == kDKControlPointKnobType) {
+        if (
+				(knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType
+                        || (knobType & kDKKnobTypeMask) == kDKControlPointKnobType
+                        || (knobType & kDKKnobTypeMask) == kDKOnPathKnobType
+				) {
             NSRect fkr = [self controlKnobRectAtPoint:p
                                                ofType:knobType];
 
@@ -145,7 +153,7 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 //            NSRectFill(fkr);
 			[knobPath fill];
 
-            if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType) {
+//            if ((knobType & kDKKnobTypeMask) == kDKBoundingRectKnobType) {
                 [sColour set];
 //                NSFrameRectWithWidth(fkr, strokeWidth);
 				[knobPath setLineWidth:strokeWidth];
@@ -153,7 +161,7 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 
                 if (radians != 0.0)
                     [NSGraphicsContext restoreGraphicsState];
-            }
+//            }
         } else
 #endif
         {
@@ -369,15 +377,14 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 
 - (BOOL)hitTestPoint:(NSPoint)p inKnobAtPoint:(NSPoint)kp ofType:(DKKnobType)knobType userInfo:(id)userInfo
 {
-	NSRect br = [self controlKnobRectAtPoint:kp
-									  ofType:knobType];
-
+	NSRect br = [self controlKnobRectAtPoint:kp];
 	if (NSPointInRect(p, br)) {
-		NSBezierPath* path = [self knobPathAtPoint:kp
-											ofType:knobType
-											 angle:0.0
-										  userInfo:userInfo];
-		return [path containsPoint:p];
+//		NSBezierPath* path = [self knobPathAtPoint:kp
+//											ofType:knobType
+//											 angle:0.0
+//										  userInfo:userInfo];
+//		return [path containsPoint:p];
+		return YES;
 	} else
 		return NO;
 }
@@ -968,26 +975,26 @@ static NSSize sKnobSize = { 6.0, 6.0 };
 {
 	NSRect kr = [self controlKnobRectAtPoint:kp];
 
-	switch (knobType & kDKKnobTypeMask) {
-	case kDKCentreTargetKnobType:
-		kr = ScaleRect(kr, 2.5);
-		break;
-
-	case kDKRotationKnobType:
-		kr = ScaleRect(kr, 1.3);
-		break;
-
-	case kDKHotspotKnobType:
-		kr = ScaleRect(kr, 1.25);
-		break;
-
-	case kDKControlPointKnobType:
-		kr = ScaleRect(kr, 0.85);
-		break;
-
-	default:
-		break;
-	}
+//	switch (knobType & kDKKnobTypeMask) {
+//	case kDKCentreTargetKnobType:
+//		kr = ScaleRect(kr, 2.5);
+//		break;
+//
+//	case kDKRotationKnobType:
+//		kr = ScaleRect(kr, 1.3);
+//		break;
+//
+//	case kDKHotspotKnobType:
+//		kr = ScaleRect(kr, 1.25);
+//		break;
+//
+//	case kDKControlPointKnobType:
+//		kr = ScaleRect(kr, 0.85);
+//		break;
+//
+//	default:
+//		break;
+//	}
 
 	return kr;
 }

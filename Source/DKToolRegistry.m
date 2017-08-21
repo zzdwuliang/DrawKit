@@ -66,6 +66,11 @@ static DKToolRegistry* s_toolRegistry = nil;
 	return s_toolRegistry;
 }
 
++ (void)setSharedToolRegistry:(DKToolRegistry *)toolRegistry {
+	s_toolRegistry = toolRegistry;
+    [s_toolRegistry retain];
+}
+
 /** @brief Return a named tool from the registry
  @param name the name of the tool of interest
  @return the tool if found, or nil if not

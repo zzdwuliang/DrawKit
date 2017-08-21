@@ -25,6 +25,8 @@ DKToolRegistry takes over the tool collection functionality formerly part of DKD
  */
 + (DKToolRegistry*)sharedToolRegistry;
 
++ (void)setSharedToolRegistry:(DKToolRegistry*)toolRegistry;
+
 /** @brief Return a named tool from the registry
  @param name the name of the tool of interest
  @return the tool if found, or nil if not
