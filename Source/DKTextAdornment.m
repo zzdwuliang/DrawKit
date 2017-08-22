@@ -4,6 +4,7 @@
  @copyright MPL2; see LICENSE.txt
 */
 
+#import <DKDrawKit/DKDrawKit.h>
 #import "DKTextAdornment.h"
 #import "DKDrawableObject+Metadata.h"
 #import "DKObjectOwnerLayer.h"
@@ -78,25 +79,7 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 	static NSMutableDictionary* dta = nil;
 
 	if (dta == nil) {
-		dta = [[NSMutableDictionary alloc] init];
-
-		NSFont* font = [NSFont fontWithName:@"Helvetica"
-									   size:14];
-		[dta setObject:font
-				forKey:NSFontAttributeName];
-
-		NSMutableParagraphStyle* ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-		[ps setAlignment:NSLeftTextAlignment];
-		[dta setObject:ps
-				forKey:NSParagraphStyleAttributeName];
-        [dta setObject:@(0)
-                forKey:NSBaselineOffsetAttributeName];
-
-		[ps release];
-
-		NSColor* tc = [NSColor blackColor];
-		[dta setObject:tc
-				forKey:NSForegroundColorAttributeName];
+		dta = [DKStyle defaultTextStyle].textAttributes.mutableCopy;
 	}
 
 	return dta;
@@ -1110,8 +1093,8 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 
 	// factor in setting for vertical alignment
 
-	textOrigin.y += [self verticalTextOffsetForTextSize:textSize
-											 objectSize:tr.size];
+//	textOrigin.y += [self verticalTextOffsetForTextSize:textSize
+//											 objectSize:tr.size];
 
 	return textOrigin;
 }
@@ -1157,8 +1140,6 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 				osize.width = 50000;
 
 			[bc setBezierPath:nil];
-			extern int DKTextMargin;
-			osize.width -= DKTextMargin*2;
 			[bc setContainerSize:osize];
 		}
 
@@ -1198,6 +1179,9 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 
 			if ([self layoutMode] == kDKTextLayoutFlowedInPath && [self flowedTextPathInset] != 0.0)
 				textOrigin.y += [self flowedTextPathInset] * 0.5;
+//fortest
+			[[NSColor greenColor] set];
+			NSRectFill(NSMakeRect(textOrigin.x, textOrigin.y, osize.width, osize.height));
 
 			[lm drawBackgroundForGlyphRange:grange
 									atPoint:textOrigin];
@@ -1451,7 +1435,7 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 		[glm addTextContainer:tc];
 		[tc release];
 
-		[glm setUsesScreenFonts:NO];
+//		[glm setUsesScreenFonts:NO];
 
 		return [glm autorelease];
 	}

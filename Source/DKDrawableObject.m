@@ -883,7 +883,7 @@ static NSDictionary* s_interconversionTable = nil;
 {
 	if ([self layer])
 		[[self layer] drawable:self
-			needsDisplayInRect:[self bounds]];
+			needsDisplayInRect:NSInsetRect([self bounds], -1, -1)];
 }
 
 /** @brief Notify the drawing and its controllers that a non-visual status change occurred

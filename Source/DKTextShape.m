@@ -26,7 +26,6 @@
 
 NSString* kDKTextOverflowIndicatorDefaultsKey = @"DKTextOverflowIndicator";
 NSString* kDKTextAllowsInlineImagesDefaultsKey = @"DKTextAllowsInlineImages";
-int DKTextMargin = 5;//TODO text margin when being edit and show
 
 #pragma mark Static Vars
 
@@ -718,6 +717,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 							  inRect:br
 							delegate:self];
 
+		//this background is draw for debug
+		[m_editorRef setBackgroundColor:[NSColor greenColor]];
+		[m_editorRef setDrawsBackground:YES];
+
 		[[m_editorRef textContainer] setWidthTracksTextView:NO];
 		[m_editorRef setImportsGraphics:[[self class] allowsInlineImages]];
 
@@ -1181,7 +1184,7 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 }
 
 - (void)drawKnob:(NSInteger)knobPartCode {
-	//do nothing, casuse we don't wnat the knob to be drawn
+	//do nothing, cause we don't want the knob to be drawn
 }
 
 
@@ -1232,9 +1235,6 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 - (NSRect)bounds
 {
 	NSRect br = [super bounds];
-
-	if (m_editorRef)
-		br = NSUnionRect(br, NSInsetRect([m_editorRef frame], -2.0, -2.0));
 
 	return br;
 }
@@ -1314,13 +1314,13 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	}
 	*/
 
+	//draw the bounds
 	if(!NSEqualSizes(NSZeroSize, [self size])){
 		[[NSColor blackColor] set];
-		//inset the rect to ensure drawing refresh all the content
-		CGContextStrokeRect([NSGraphicsContext currentContext].CGContext, NSInsetRect(self.bounds, 1, 1));
+		CGContextStrokeRect([NSGraphicsContext currentContext].CGContext,self.bounds);
 	}
 
-	[super drawSelectedState];
+//	[super drawSelectedState];
 }
 
 - (void)mouseDoubleClickedAtPoint:(NSPoint)mp inPart:(NSInteger)partcode event:(NSEvent*)evt

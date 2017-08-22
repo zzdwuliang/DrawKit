@@ -35,11 +35,8 @@ NSLayoutManager* sharedDrawingLayoutManager(void)
 		[sharedLM addTextContainer:tc];
 		[tc release];
 
-		[sharedLM setUsesScreenFonts:NO];
-	} else
-		tc = [[sharedLM textContainers] lastObject];
-
-	[tc setLineFragmentPadding:0];
+//		[sharedLM setUsesScreenFonts:YES];
+	}
 	return sharedLM;
 }
 
