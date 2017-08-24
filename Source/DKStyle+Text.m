@@ -26,7 +26,7 @@ static NSString* kDKBasicTextStyleDefaultKey = @"326CF635-7863-42C6-900D-CFFC7D5
 
 	if (dts == nil) {
 //		NSFont* font = [NSFont fontWithName:@"Helvetica"
-//									   size:30];
+//									   size:14];
         NSFont* font = [NSFont systemFontOfSize:14];
 		dts = [[DKStyle alloc] init];
 		[dts setFont:font];

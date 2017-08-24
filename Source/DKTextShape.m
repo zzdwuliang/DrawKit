@@ -1723,30 +1723,30 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	[self setSize:NSMakeSize(s.width, s.height)];
 }
 
-- (BOOL)textView:(NSTextView*)tv doCommandBySelector:(SEL)selector
-{
-	// this allows the texview to act as a special field editor. Return + Enter complete text editing, but Tab does not. Also, for convenience to
-	// Windows switchers, Shift+Return/Shift+Enter insert new lines.
-
-	if (tv == m_editorRef) {
-		NSEvent* evt = [NSApp currentEvent];
-
-		if ([evt type] == NSKeyDown) {
-			if (selector == @selector(insertTab:)) {
-				[tv insertTabIgnoringFieldEditor:self];
-				return YES;
-			} else if (selector == @selector(insertNewline:)) {
-				BOOL shift = ([evt modifierFlags] & NSShiftKeyMask) != 0;
-
-				if (shift) {
-					[tv insertNewlineIgnoringFieldEditor:self];
-					return YES;
-				}
-			}
-		}
-	}
-	return NO;
-}
+//- (BOOL)textView:(NSTextView*)tv doCommandBySelector:(SEL)selector
+//{
+//	// this allows the texview to act as a special field editor. Return + Enter complete text editing, but Tab does not. Also, for convenience to
+//	// Windows switchers, Shift+Return/Shift+Enter insert new lines.
+//
+//	if (tv == m_editorRef) {
+//		NSEvent* evt = [NSApp currentEvent];
+//
+//		if ([evt type] == NSKeyDown) {
+//			if (selector == @selector(insertTab:)) {
+//				[tv insertTabIgnoringFieldEditor:self];
+//				return YES;
+//			} else if (selector == @selector(insertNewline:)) {
+//				BOOL shift = ([evt modifierFlags] & NSShiftKeyMask) != 0;
+//
+//				if (shift) {
+//					[tv insertNewlineIgnoringFieldEditor:self];
+//					return YES;
+//				}
+//			}
+//		}
+//	}
+//	return NO;
+//}
 
 #pragma mark -
 #pragma mark - as a KVO observer
