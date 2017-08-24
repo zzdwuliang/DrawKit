@@ -756,6 +756,14 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 		DKDrawingView* parent = (DKDrawingView*)[m_editorRef superview];
 		[parent endTextEditing];
+
+		if([m_editorRef textStorage].length<=0){
+			//remove self if not text input
+			m_editorRef = nil;
+			[[self layer] removeObject:self];
+			return;
+		}
+
 		[self notifyVisualChange];
 		m_editorRef = nil;
 	}
