@@ -570,7 +570,7 @@ static Class s_textEditorClass = Nil;
 #endif
 	// not using screen fonts ensures precise WYSIWYG at small point sizes
 
-	[lm setUsesScreenFonts:NO];
+//	[lm setUsesScreenFonts:NO];
 
 	[m_textEditViewRef setDrawsBackground:drawBkGnd];
 //	[m_textEditViewRef setFieldEditor:YES];
@@ -603,9 +603,9 @@ static Class s_textEditorClass = Nil;
 	// add the subview and make it first responder
 
 	[self addSubview:m_textEditViewRef];
-	[[self window] makeFirstResponder:m_textEditViewRef];
-
 	[m_textEditViewRef setFrame:editorFrame];// set the frame after added to the view
+
+	[[self window] makeFirstResponder:m_textEditViewRef];
 	[m_textEditViewRef setNeedsDisplay:YES];
 
 	[[NSNotificationCenter defaultCenter] postNotificationName:kDKDrawingViewDidBeginTextEditing

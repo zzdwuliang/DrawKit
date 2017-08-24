@@ -708,9 +708,7 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 		NSRect br = [self logicalBounds];
 
-//        br= NSMakeRect(self.location.x-self.size.width/2, self.location.y-self.size.height/2, self.size.width, self.size.height);
 //		CGFloat offset = [[self textAdornment] verticalTextOffsetForObject:self];
-
 //		br.origin.y += offset;
 
 		m_editorRef = [view editText:[[self textAdornment] textForEditing]
@@ -718,15 +716,19 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 							delegate:self];
 
 		//this background is draw for debug
-		[m_editorRef setBackgroundColor:[NSColor greenColor]];
-		[m_editorRef setDrawsBackground:YES];
+//		[m_editorRef setBackgroundColor:[NSColor greenColor]];
+//		[m_editorRef setDrawsBackground:YES];
+        //draw the NSTextView's border for debug
+//        m_editorRef.wantsLayer=YES;
+//        m_editorRef.layer.borderWidth = 1;
+//        m_editorRef.layer.borderColor = [NSColor greenColor].CGColor;
 
+        [[m_editorRef textContainer] setHeightTracksTextView:NO];
 		[[m_editorRef textContainer] setWidthTracksTextView:NO];
 		[m_editorRef setImportsGraphics:[[self class] allowsInlineImages]];
 
 		if (NSWidth(br) > minsize.width + 1.0) {
             [[m_editorRef textContainer] setContainerSize:maxsize];
-			[[m_editorRef textContainer] setWidthTracksTextView:NO];
 			[m_editorRef setVerticallyResizable:YES];
 			[m_editorRef setHorizontallyResizable:YES];
 		} else {
@@ -736,14 +738,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 //		[m_editorRef setMinSize:minsize];
 //		[m_editorRef setMaxSize:maxsize];
-		[[m_editorRef textContainer] setHeightTracksTextView:NO];
+
 		[m_editorRef setVerticallyResizable:YES];
 		[m_editorRef setTypingAttributes:[self textAttributes]];
 
-		//draw the NSTextView's border for test
-//        m_editorRef.wantsLayer=YES;
-//        m_editorRef.layer.borderWidth = 1;
-//        m_editorRef.layer.borderColor = [NSColor greenColor].CGColor;
 		[self textDidChange:nil];
 		[self notifyVisualChange];
 	}
@@ -1239,6 +1237,26 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	return br;
 }
 
+- (void)setLocation:(NSPoint)location {
+	//make it pixel perfect for better text display
+    location.x = ceil((float)location.x);
+    location.y = ceil((float)location.y);
+    [super setLocation:location];
+}
+
+- (void)setSize:(NSSize)size {
+	//make it pixel perfect for better text display
+    size.width = ceil((float)size.width);
+    size.height = ceil((float)size.height);
+    if((int)size.width % 2 == 1){
+        size.width += 1;
+    }
+    if((int)size.height % 2 == 1){
+        size.height += 1;
+    }
+    [super setSize:size];
+}
+
 - (NSSize)extraSpaceNeeded
 {
 	NSSize extra = [super extraSpaceNeeded];
@@ -1695,12 +1713,13 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 - (void)textDidChange:(NSNotification *)notification
 {
 #pragma unused(aNotification)
-	[m_editorRef.layoutManager ensureLayoutForTextContainer:m_editorRef.layoutManager.textContainers.lastObject];
-	NSRect rect = [m_editorRef.layoutManager usedRectForTextContainer:m_editorRef.layoutManager.textContainers.lastObject];
+	[m_editorRef.layoutManager ensureLayoutForTextContainer:m_editorRef.textContainer];
+	NSRect rect = [m_editorRef.layoutManager usedRectForTextContainer:m_editorRef.textContainer];
 	m_editorRef.frame = NSMakeRect(m_editorRef.frame.origin.x, m_editorRef.frame.origin.y, rect.size.width, rect.size.height);
+
 	NSPoint p = m_editorRef.frame.origin;
 	NSSize s = m_editorRef.frame.size;
-	[self setLocation:NSMakePoint(p.x+s.width/2, p.y+s.height/2)];
+	[self setLocation:NSMakePoint( p.x+s.width/2.0f, p.y+s.height/2.0f)];
 	[self setSize:NSMakeSize(s.width, s.height)];
 }
 

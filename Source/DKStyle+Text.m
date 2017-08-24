@@ -25,12 +25,12 @@ static NSString* kDKBasicTextStyleDefaultKey = @"326CF635-7863-42C6-900D-CFFC7D5
 	DKStyle* dts = [DKStyleRegistry styleForKey:kDKBasicTextStyleDefaultKey];
 
 	if (dts == nil) {
-		NSFont* font = [NSFont fontWithName:@"Helvetica"
-									   size:14];
-
+//		NSFont* font = [NSFont fontWithName:@"Helvetica"
+//									   size:30];
+        NSFont* font = [NSFont systemFontOfSize:14];
 		dts = [[DKStyle alloc] init];
 		[dts setFont:font];
-		[dts setAlignment:NSCenterTextAlignment];
+		[dts setAlignment:NSLeftTextAlignment];
 		[dts setName:[self styleNameForFont:font]];
 
 		// because this is a framework default, its unique key must always be recreated the same. This is not something any client

@@ -667,7 +667,7 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 	[[self textSubstitutor] setAttributes:modAttrs];
 	[modAttrs release];
 
-	[self applyNonCocoaTextAttributes:attrs];
+//	[self applyNonCocoaTextAttributes:attrs];
 }
 
 - (NSDictionary*)textAttributes
@@ -1134,12 +1134,13 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 
 			osize = [textLayoutPath bounds].size;
 			[bc setContainerSize:osize];
-			[bc setBezierPath:textLayoutPath];
+            if([bc isKindOfClass:[DKBezierTextContainer class]])
+				[bc setBezierPath:textLayoutPath];
 		} else {
 			if ([self allowsTextToExtendHorizontally])
 				osize.width = 50000;
-
-			[bc setBezierPath:nil];
+            if([bc isKindOfClass:[DKBezierTextContainer class]])
+				[bc setBezierPath:nil];
 			[bc setContainerSize:osize];
 		}
 
@@ -1179,18 +1180,15 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 
 			if ([self layoutMode] == kDKTextLayoutFlowedInPath && [self flowedTextPathInset] != 0.0)
 				textOrigin.y += [self flowedTextPathInset] * 0.5;
-//fortest
-			[[NSColor greenColor] set];
-			NSRectFill(NSMakeRect(textOrigin.x, textOrigin.y, osize.width, osize.height));
+
+//draw background for debug
+//			[[NSColor greenColor] set];
+//			NSRectFill(NSMakeRect(textOrigin.x, textOrigin.y, osize.width, osize.height));
 
 			[lm drawBackgroundForGlyphRange:grange
 									atPoint:textOrigin];
 			[lm drawGlyphsForGlyphRange:grange
 								atPoint:textOrigin];
-
-			//draw for test
-//			[[NSColor greenColor] set];
-//			CGContextStrokeRect([NSGraphicsContext currentContext].CGContext,NSMakeRect(textOrigin.x, textOrigin.y, bc.containerSize.width, bc.containerSize.height) );
 		}
 		[contents removeLayoutManager:lm];
 	}
