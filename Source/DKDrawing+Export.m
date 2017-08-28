@@ -31,9 +31,15 @@ NSString* kDKExportedImageRelativeScale = @"kDKExportedImageRelativeScale";
 }
 
 - (CGImageRef)CGImageWithResolution:(NSInteger)dpi hasAlpha:(BOOL)hasAlpha relativeScale:(CGFloat)relScale
-
 {
-	NSPDFImageRep* pdfRep = [NSPDFImageRep imageRepWithData:[self pdf]];
+	NSRect frame = NSZeroRect;
+	frame.size = [[self drawing] drawingSize];
+	return [self CGImageWithResolution:dpi hasAlpha:hasAlpha relativeScale:relScale insideRect:frame];
+}
+
+- (CGImageRef)CGImageWithResolution:(NSInteger)dpi hasAlpha:(BOOL)hasAlpha relativeScale:(CGFloat)relScale insideRect:(NSRect)rect
+{
+	NSPDFImageRep* pdfRep = [NSPDFImageRep imageRepWithData:[self pdfInsideRect:rect]];
 
 	NSAssert(pdfRep != nil, @"couldn't create pdf image rep");
 	NSAssert(relScale > 0, @"scale factor must be greater than zero");
@@ -43,7 +49,7 @@ NSString* kDKExportedImageRelativeScale = @"kDKExportedImageRelativeScale";
 
 	// create a bitmap rep of the requisite size.
 
-	NSSize bmSize = [self drawingSize];
+	NSSize bmSize = rect.size;
 
 	bmSize.width = ceil((bmSize.width * (CGFloat)dpi * relScale) / 72.0f);
 	bmSize.height = ceil((bmSize.height * (CGFloat)dpi * relScale) / 72.0f);
@@ -92,7 +98,7 @@ NSString* kDKExportedImageRelativeScale = @"kDKExportedImageRelativeScale";
 	[pdfRep drawInRect:destRect];
 
 	RESTORE_GRAPHICS_CONTEXT //[NSGraphicsContext restoreGraphicsState];
-		CGImageRef image = CGBitmapContextCreateImage([context graphicsPort]);
+	CGImageRef image = CGBitmapContextCreateImage([context graphicsPort]);
 
 	return (CGImageRef)[(NSObject*)image autorelease];
 }

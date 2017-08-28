@@ -429,6 +429,13 @@ static NSArray* s_selectionColours = nil;
 {
 	NSRect frame = NSZeroRect;
 	frame.size = [[self drawing] drawingSize];
+	return [self pdfInsideRect:frame];
+}
+
+- (NSData*)pdfInsideRect:(NSRect)rect
+{
+	NSRect frame = NSZeroRect;
+	frame.size = [[self drawing] drawingSize];
 
 	DKLayerPDFView* pdfView = [[DKLayerPDFView alloc] initWithFrame:frame
 														  withLayer:self];
@@ -436,7 +443,7 @@ static NSArray* s_selectionColours = nil;
 
 	[[self drawing] addController:vc];
 
-	NSData* pdfData = [pdfView dataWithPDFInsideRect:frame];
+	NSData* pdfData = [pdfView dataWithPDFInsideRect:rect];
 	[pdfView release]; // removes the controller
 
 	return pdfData;

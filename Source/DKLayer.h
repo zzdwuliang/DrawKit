@@ -243,6 +243,8 @@ indicate likely handling of drag and drop operations by a layer instance.
  */
 - (NSData*)pdf;
 
+- (NSData*)pdfInsideRect:(NSRect)rect;
+
 /** @brief Writes the content of the layer as a pdf to a nominated pasteboard
 
  Becomes the new pasteboard owner and removes any existing declared types

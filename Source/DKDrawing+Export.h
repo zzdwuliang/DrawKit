@@ -39,6 +39,7 @@ This uses Image I/O to perform the data encoding.
  */
 - (CGImageRef)CGImageWithResolution:(NSInteger)dpi hasAlpha:(BOOL)hasAlpha;
 - (CGImageRef)CGImageWithResolution:(NSInteger)dpi hasAlpha:(BOOL)hasAlpha relativeScale:(CGFloat)relScale;
+- (CGImageRef)CGImageWithResolution:(NSInteger)dpi hasAlpha:(BOOL)hasAlpha relativeScale:(CGFloat)relScale insideRect:(NSRect)rect;
 
 // convert to various formats:
 
