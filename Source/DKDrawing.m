@@ -1644,6 +1644,8 @@ static id sDearchivingHelper = nil;
 	[[NSNotificationCenter defaultCenter] postNotificationName:kDKDrawingWillBeSavedOrExported
 														object:self];
 
+	[(DKObjectDrawingLayer *)[self firstLayerOfClass:[DKObjectDrawingLayer class]] deselectAll];
+
 	// the drawing size is updated/added to the metadata by default here.
 
 	NSSize ds = [self drawingSize];
@@ -1751,6 +1753,11 @@ static id sDearchivingHelper = nil;
 {
 	[self finalizePriorToSaving];
 	return [super pdf];
+}
+
+- (NSData *)pdfInsideRect:(NSRect)rect {
+	[self finalizePriorToSaving];
+	return [super pdfInsideRect:rect];
 }
 
 /** @brief Returns the image manager
