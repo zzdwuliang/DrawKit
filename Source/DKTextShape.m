@@ -718,17 +718,17 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 		//this background is draw for debug
 //		[m_editorRef setBackgroundColor:[NSColor greenColor]];
 //		[m_editorRef setDrawsBackground:YES];
-        //draw the NSTextView's border for debug
+		//draw the NSTextView's border for debug
 //        m_editorRef.wantsLayer=YES;
 //        m_editorRef.layer.borderWidth = 1;
 //        m_editorRef.layer.borderColor = [NSColor greenColor].CGColor;
 
-        [[m_editorRef textContainer] setHeightTracksTextView:NO];
+		[[m_editorRef textContainer] setHeightTracksTextView:NO];
 		[[m_editorRef textContainer] setWidthTracksTextView:NO];
 		[m_editorRef setImportsGraphics:[[self class] allowsInlineImages]];
 
 		if (NSWidth(br) > minsize.width + 1.0) {
-            [[m_editorRef textContainer] setContainerSize:maxsize];
+			[[m_editorRef textContainer] setContainerSize:maxsize];
 			[m_editorRef setVerticallyResizable:YES];
 			[m_editorRef setHorizontallyResizable:YES];
 		} else {
@@ -752,15 +752,33 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	if (m_editorRef) {
 		LogEvent_(kReactiveEvent, @"finishing edit of text in shape");
 
-		[self setText:[m_editorRef textStorage]];
+		if([m_editorRef textStorage].length > 0)
+			[self setText:[m_editorRef textStorage]];
 
 		DKDrawingView* parent = (DKDrawingView*)[m_editorRef superview];
 		[parent endTextEditing];
 
-		if([m_editorRef textStorage].length<=0){
-			//remove self if not text input
+		//remove self if currently no text has been input
+
+		if([m_editorRef textStorage].length <= 0){
 			m_editorRef = nil;
-			[[self layer] removeObject:self];
+
+            // if no text has been input before, meaning we are operating a new created empty DKTextShape,
+            if(self.text.length <= 0){
+				id 	undoManager = [self.layer undoManager];
+				[undoManager disableUndoRegistration];
+				if([undoManager canUndo]){
+					// undo to delete the object if possible
+					[undoManager undo];
+				}else{
+					[self.layer removeObject:self];
+				}
+				[undoManager enableUndoRegistration];
+			}else{
+				// remove the object with undo registration enable
+				[self.layer removeObject:self];
+			}
+
 			return;
 		}
 
@@ -1544,6 +1562,23 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	[super styleDidChange:note];
 }
 
+- (void)setContainer:(id <DKDrawableContainer>)aContainer {
+	[super setContainer:aContainer];
+
+	if(self.text.length > 0 && aContainer){
+		[self.undoManager disableUndoRegistration];
+
+		NSRect rect = [[self textAdornment] textLayoutRectForObject:self];
+		NSPoint location = self.location;
+		location.x += (rect.size.width - self.size.width)/2.0f;
+		location.y += (rect.size.height - self.size.height)/2.0f;
+		[self setLocation:location];
+		[self setSize:rect.size];
+
+		[self.undoManager enableUndoRegistration];
+	}
+}
+
 #pragma mark -
 #pragma mark As an NSObject
 - (void)dealloc
@@ -1727,8 +1762,11 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 	NSPoint p = m_editorRef.frame.origin;
 	NSSize s = m_editorRef.frame.size;
+
+    [[self.layer undoManager] disableUndoRegistration];
 	[self setLocation:NSMakePoint( p.x+s.width/2.0f, p.y+s.height/2.0f)];
 	[self setSize:NSMakeSize(s.width, s.height)];
+    [[self.layer undoManager] enableUndoRegistration];
 }
 
 //- (BOOL)textView:(NSTextView*)tv doCommandBySelector:(SEL)selector
@@ -1776,6 +1814,13 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 		if (![[change objectForKey:NSKeyValueChangeOldKey] isEqual:[change objectForKey:NSKeyValueChangeNewKey]]) {
 			if (!([[self undoManager] isUndoing] || [[self undoManager] isRedoing]))
 				[self mutateStyle];
+
+			if([keypath isEqualToString:@"label"]){
+                NSAttributedString * newValue = [change objectForKey:NSKeyValueChangeNewKey];
+                NSAttributedString * oldValue = [change objectForKey:NSKeyValueChangeOldKey];
+                if([newValue.string isEqualToString:@""] || [oldValue.string isEqualToString:@""])
+                    return;
+            }
 
 			[[[self undoManager] prepareWithInvocationTarget:self] changeKeyPath:keypath
 																		ofObject:object

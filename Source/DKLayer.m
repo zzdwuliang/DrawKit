@@ -147,7 +147,7 @@ static NSArray* s_selectionColours = nil;
 /** @brief Obtains the undo manager that is handling undo for the drawing and hence, this layer
  @return the undo manager in use
  */
-- (NSUndoManager*)undoManager
+- (id)undoManager
 {
 	// return the nominated undo manager
 

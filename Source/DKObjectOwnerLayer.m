@@ -409,6 +409,8 @@ static DKLayerCacheOption sDefaultCacheOption = kDKLayerCacheNone;
 
 		[[[self undoManager] prepareWithInvocationTarget:self] insertObject:obj
 														   inObjectsAtIndex:indx];
+		[[self undoManager] setActionName:[NSString stringWithFormat:@"Insert %@",[obj className]]];
+
 		[[NSNotificationCenter defaultCenter] postNotificationName:kDKLayerWillRemoveObject
 															object:self];
 

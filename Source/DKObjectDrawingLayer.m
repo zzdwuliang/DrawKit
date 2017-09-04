@@ -491,8 +491,13 @@ enum {
 {
 	if ([self isSelectionNotEmpty]) {
 		[self refreshSelectedObjects];
-		[m_selection makeObjectsPerformSelector:@selector(objectIsNoLongerSelected)];
-		[m_selection removeAllObjects];
+
+		NSMutableSet *selection = m_selection;
+		[selection retain];
+		[selection makeObjectsPerformSelector:@selector(objectIsNoLongerSelected)];
+		[selection removeAllObjects];
+		[selection release];
+
 		[self hideRulerMarkers];
 		mSelBoundsCached = NSZeroRect;
 		[[NSNotificationCenter defaultCenter] postNotificationName:kDKLayerSelectionDidChange

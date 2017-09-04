@@ -1261,8 +1261,9 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 		NSLayoutManager* lm = sharedDrawingLayoutManager();
 		DKBezierTextContainer* bc = [[lm textContainers] lastObject];
 
-		if ([self allowsTextToExtendHorizontally])
-			oSize.width = 50000;
+//		if ([self allowsTextToExtendHorizontally])
+		oSize.width = 50000;
+		oSize.height = 50000;
 
 		[bc setBezierPath:nil];
 		[bc setContainerSize:oSize];
@@ -1274,6 +1275,7 @@ static CGFloat s_maximumVerticalOffset = DEFAULT_BASELINE_OFFSET_MAX;
 		// Force layout of the text and find out how much of it fits in the container.
 
 		glyphRange = [lm glyphRangeForTextContainer:bc];
+		[lm ensureLayoutForTextContainer:bc];
 		tlr = [lm usedRectForTextContainer:bc];
 		CGFloat offset = [self verticalTextOffsetForTextSize:tlr.size
 												  objectSize:oSize];

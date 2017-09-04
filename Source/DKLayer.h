@@ -97,7 +97,7 @@ indicate likely handling of drag and drop operations by a layer instance.
 /** @brief Obtains the undo manager that is handling undo for the drawing and hence, this layer
  @return the undo manager in use
  */
-- (NSUndoManager*)undoManager;
+- (id)undoManager;
 
 /** @brief Notifies the layer that it or a group containing it was added to a drawing.
 

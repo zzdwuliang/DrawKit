@@ -15,6 +15,7 @@
 
 #pragma mark Contants(Non - localized)
 NSString* kDKDrawingToolWillMakeNewObjectNotification = @"kDKDrawingToolWillMakeNewObjectNotification";
+NSString* kDKDrawingToolFinishCreateObjectNotification = @"kDKDrawingToolFinishCreateObjectNotification";
 NSString* kDKDrawingToolCreatedObjectsStyleDidChange = @"kDKDrawingToolCreatedObjectsStyleDidChange";
 
 #pragma mark Static Vars
@@ -253,6 +254,8 @@ static DKStyle* sCreatedObjectsStyle = nil;
 			m_protoObject = nil;
 
 			result = YES;
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:kDKDrawingToolFinishCreateObjectNotification object:self];
 		}
 	}
 
