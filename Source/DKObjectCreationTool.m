@@ -16,6 +16,7 @@
 #pragma mark Contants(Non - localized)
 NSString* kDKDrawingToolWillMakeNewObjectNotification = @"kDKDrawingToolWillMakeNewObjectNotification";
 NSString* kDKDrawingToolFinishCreateObjectNotification = @"kDKDrawingToolFinishCreateObjectNotification";
+NSString* kDKDrawingToolCreateObjectInvalidNotification = @"kDKDrawingToolCreateObjectInvalidNotification";
 NSString* kDKDrawingToolCreatedObjectsStyleDidChange = @"kDKDrawingToolCreatedObjectsStyleDidChange";
 
 #pragma mark Static Vars
@@ -234,6 +235,8 @@ static DKStyle* sCreatedObjectsStyle = nil;
 
 			if (![[layer undoManager] isUndoRegistrationEnabled])
 				[[layer undoManager] enableUndoRegistration];
+
+			[[NSNotificationCenter defaultCenter] postNotificationName:kDKDrawingToolCreateObjectInvalidNotification object:self];
 		} else {
 			// a valid object was made, so commit it to the layer and select it
 			// turn undo back on and commit the object

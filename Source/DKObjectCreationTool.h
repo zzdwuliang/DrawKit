@@ -96,4 +96,5 @@ You can also set up a style to be applied to all new objects initially as an ind
 
 extern NSString* kDKDrawingToolWillMakeNewObjectNotification;
 extern NSString* kDKDrawingToolFinishCreateObjectNotification;
+extern NSString* kDKDrawingToolCreateObjectInvalidNotification;
 extern NSString* kDKDrawingToolCreatedObjectsStyleDidChange;
