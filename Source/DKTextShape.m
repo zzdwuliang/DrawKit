@@ -790,7 +790,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 - (BOOL)isEditing
 {
 	// returns YES if editing currently in progress - valid during drawing only
-	return (m_editorRef && ([m_editorRef superview] == [[self drawing] currentView]) && [[NSGraphicsContext currentContext] isDrawingToScreen]);
+	if(m_editorRef){
+		return YES;
+	}
+	return NO;
 }
 
 - (DKTextAdornment*)textAdornment
@@ -1375,6 +1378,15 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 	if (![self locked])
 		[self startEditingInView:(DKDrawingView*)[[self layer] currentView]];
+}
+
+- (void)mouseDraggedAtPoint:(NSPoint)mp inPart:(NSInteger)partcode event:(NSEvent *)evt {
+	[super mouseDraggedAtPoint:mp inPart:partcode event:evt];
+}
+
+- (void)mouseDownAtPoint:(NSPoint)mp inPart:(NSInteger)partcode event:(NSEvent *)evt {
+	[super mouseDownAtPoint:mp inPart:partcode event:evt];
+	[self endEditing];
 }
 
 - (void)objectDidBecomeSelected
