@@ -1318,8 +1318,8 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 - (void)drawContent
 {
-	if (![[self style] isEmpty])
-		[super drawContent];
+//	if (![[self style] isEmpty])
+//		[super drawContent];
 
 	if (![self isEditing]) {
 		// for hit-testing, standard text layout is slow and doesn't work well with the scaling mechanism used. Thus we use
@@ -1364,7 +1364,9 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	//draw the bounds
 	if(!NSEqualSizes(NSZeroSize, [self size])){
 		[[NSColor blackColor] set];
-		CGContextStrokeRect([NSGraphicsContext currentContext].CGContext,self.bounds);
+		NSBezierPath *path = [NSBezierPath bezierPathWithRect:self.bounds];
+		[path setLineWidth:2];
+		[path stroke];
 	}
 
 //	[super drawSelectedState];
