@@ -47,6 +47,7 @@ to attach arbitrary data to any drawable object.
 	BOOL mMarked; // used by DKStorableObject protocol implementation
 	BOOL mGhosted; // YES if object is drawn ghosted
 	BOOL mIsHitTesting; // YES when drawContent is called for the purposes of hit-testing
+	BOOL m_drawSelectionPath;
 	NSMutableDictionary* mRenderingCache; // a dictionary to support general caching by renderers
 @protected
 	BOOL m_showBBox : 1; // debugging - display the object's bounding box
@@ -540,6 +541,11 @@ to attach arbitrary data to any drawable object.
  @param hitTesting YES if hit-testing, NO otherwise
  */
 - (void)setBeingHitTested:(BOOL)hitTesting;
+
+- (BOOL)isDrawSelectionPath;
+
+- (void)setDrawSelectionPath:(BOOL)drawSelectionPath;
+
 
 // mouse events:
 

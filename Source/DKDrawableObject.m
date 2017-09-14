@@ -288,6 +288,7 @@ static NSDictionary* s_interconversionTable = nil;
 	if (self) {
 		m_visible = YES;
 		m_snapEnable = YES;
+		m_drawSelectionPath = YES;
 
 		[self setStyle:aStyle];
 	}
@@ -854,6 +855,8 @@ static NSDictionary* s_interconversionTable = nil;
  */
 - (void)drawSelectionPath:(NSBezierPath*)path
 {
+	if(![self isDrawSelectionPath])return;
+
 	if ([self locked])
 		[[NSColor lightGrayColor] set];
 	else {
@@ -867,7 +870,14 @@ static NSDictionary* s_interconversionTable = nil;
 			[[[self layer] selectionColour] set];
 		}
 	}
-	[path setLineWidth:0.0];
+
+	NSInteger dashCount = 0;
+	CGFloat dashArray[3];
+	dashCount = 2;
+	dashArray[0] = 5;
+	dashArray[1] = 5;
+	[path setLineDash:dashArray count:dashCount phase:0.0];
+	[path setLineWidth:1];
 	[path stroke];
 }
 
@@ -1877,6 +1887,14 @@ static NSRect s_oldBounds;
 	mIsHitTesting = hitTesting;
 }
 
+- (BOOL)isDrawSelectionPath {
+	return m_drawSelectionPath;
+}
+
+- (void)setDrawSelectionPath:(BOOL)drawSelectionPath {
+	m_drawSelectionPath = drawSelectionPath;
+}
+
 #pragma mark -
 #pragma mark - basic event handling
 
@@ -2359,6 +2377,8 @@ static NSRect s_oldBounds;
 			   forKey:@"visible"];
 	[coder encodeBool:[self locked]
 			   forKey:@"locked"];
+	[coder encodeBool:[self isDrawSelectionPath]
+			   forKey:@"draw_selection_path"];
 	[coder encodeInteger:mZIndex
 				  forKey:@"DKDrawableObject_zIndex"];
 	[coder encodeBool:[self isGhosted]
@@ -2389,6 +2409,7 @@ static NSRect s_oldBounds;
 		[self updateMetadataKeys];
 
 		[self setVisible:[coder decodeBoolForKey:@"visible"]];
+		[self setDrawSelectionPath:[coder decodeBoolForKey:@"draw_selection_path"]];
 		mZIndex = [coder decodeIntegerForKey:@"DKDrawableObject_zIndex"];
 		m_snapEnable = YES;
 
@@ -2419,6 +2440,8 @@ static NSRect s_oldBounds;
 	DKStyle* styleCopy = [[self style] copy];
 	[copy setStyle:styleCopy]; // style will be shared if set to be shared, otherwise copied
 	[styleCopy release];
+
+	[copy setDrawSelectionPath:[self isDrawSelectionPath]];
 
 	// ghost setting is copied but lock states are not
 

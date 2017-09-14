@@ -1981,7 +1981,7 @@ finish:
 {
 #ifdef qUseCurveFit
 	if (![self locked]) {
-		
+
 		// Extracted from NSBezierPath+GPC in 1.5b of DrawKit
 		NSBezierPath* originalPath = [self path];
 		if ([originalPath isEmpty])
@@ -2211,6 +2211,11 @@ finish:
 #endif
 
 	}
+
+	if(self.pathCreationMode == kDKPathCreateModeEditExisting && !m_enableKnob){
+		NSBezierPath *path = [NSBezierPath bezierPathWithRect:self.bounds];
+		[self drawSelectionPath:path];
+	}
 }
 
 /** @brief Draw the ghosted content of the object
@@ -2268,8 +2273,8 @@ finish:
  @return an integer value, the partcode hit. */
 - (NSInteger)hitSelectedPart:(NSPoint)pt forSnapDetection:(BOOL)snap
 {
-    if(!m_enableKnob)
-        return kDKDrawingEntireObjectPart;
+	if(!m_enableKnob)
+		return kDKDrawingEntireObjectPart;
 
 	CGFloat tol = [[[self layer] knobs] controlKnobSize].width;
 
