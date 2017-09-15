@@ -988,11 +988,13 @@ static Class s_textEditorClass = Nil;
 {
 //	NSLog(@"DKDrawingView drawRect rect:%@", NSStringFromRect(rect));
 	// draw the entire content of the drawing:
-	if(!NSIsEmptyRect(self.clipRect)){
-		[[NSBezierPath bezierPathWithRect:NSIntersectionRect(self.clipRect, rect)] setClip];
-	}
 
 	[self set];
+
+	if(!NSIsEmptyRect(self.clipRect)){
+		rect = NSIntersectionRect(self.clipRect, rect);
+		CGContextClipToRect([[NSGraphicsContext currentContext] graphicsPort], rect);
+	}
 	[[self drawing] drawRect:rect
 					  inView:self];
 
