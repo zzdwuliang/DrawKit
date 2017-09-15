@@ -703,6 +703,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	if (m_editorRef == nil) {
 		LogEvent_(kReactiveEvent, @"starting edit of text shape");
 
+        if([view isTextBeingEdited]){
+            return;
+        }
+
 		NSSize maxsize = [self maxSize];
 		NSSize minsize = [self minSize];
 

@@ -236,6 +236,10 @@ static DKStyle* sCreatedObjectsStyle = nil;
 			if (![[layer undoManager] isUndoRegistrationEnabled])
 				[[layer undoManager] enableUndoRegistration];
 
+			//deselect all object
+			DKObjectDrawingLayer* odl = (DKObjectDrawingLayer*)layer;
+			[odl deselectAll];
+
 			[[NSNotificationCenter defaultCenter] postNotificationName:kDKDrawingToolCreateObjectInvalidNotification object:self];
 		} else {
 			// a valid object was made, so commit it to the layer and select it
