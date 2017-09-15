@@ -125,8 +125,7 @@ NSString* kDKSelectionToolTargetObject = @"kDKSelectionToolTargetObject";
 		// the extra padding here is OK for the default style - if you use something with a
 		// bigger stroke this may need changing
 
-		[aLayer setNeedsDisplayInRects:updateRegion
-					  withExtraPadding:NSMakeSize(2.5, 2.5)];
+		[aLayer setNeedsDisplayInRect:NSInsetRect(NSUnionRect(omr, marqueeRect), -2.5, -2.5)];
 
 		mMarqueeRect = marqueeRect;
 	}
@@ -1145,8 +1144,10 @@ static void dragFunction_mouseUp(const void* obj, void* context)
 {
 #pragma unused(aRect)
 
-	if ([self operationMode] == kDKEditToolSelectionMode)
+	if ([self operationMode] == kDKEditToolSelectionMode){
+		NSLog(@"rect:%@", NSStringFromRect(aRect));
 		[self drawMarqueeInView:(DKDrawingView*)aView];
+	}
 	else if (mInProxyDrag && mProxyDragImage != nil) {
 		// need to flip the image if needed
 
