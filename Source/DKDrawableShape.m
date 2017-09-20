@@ -2594,8 +2594,8 @@ static NSSize sTempSavedOffset;
 
 	valid = ([self path] != nil && ![[self path] isEmpty] && sz.width != 0.0 && sz.height != 0.0);
 	if(valid){
-		if(self.size.width < [self minValidateSize].width ||
-				self.size.height < [self minValidateSize].height){
+		if(fabs(self.size.width) < [self minValidateSize].width ||
+				fabs(self.size.height) < [self minValidateSize].height){
 			valid = NO;
 		}
 	}

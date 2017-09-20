@@ -102,6 +102,9 @@ to attach arbitrary data to any drawable object.
  */
 + (NSColor*)ghostColour;
 
++ (void)setDefaultMinValidateSize:(NSSize)size;
++ (NSSize)DefaultMinValidateSize;
+
 // pasteboard types for drag/drop:
 
 + (NSArray*)pasteboardTypesForOperation:(DKPasteboardOperationType)op;

@@ -49,6 +49,7 @@ NSString* kDKDrawableCachedImageKey = @"DKD_Cached_Img";
 
 static NSColor* s_ghostColour = nil;
 static NSDictionary* s_interconversionTable = nil;
+static NSSize s_minValidateSize;
 
 #pragma mark -
 @implementation DKDrawableObject
@@ -196,6 +197,14 @@ static NSDictionary* s_interconversionTable = nil;
 	return s_ghostColour;
 }
 
++ (void)setDefaultMinValidateSize:(NSSize)size{
+	s_minValidateSize = size;
+}
+
++ (NSSize)DefaultMinValidateSize{
+	return s_minValidateSize;
+}
+
 #pragma mark -
 
 /** @brief Return the interconversion table
@@ -290,7 +299,7 @@ static NSDictionary* s_interconversionTable = nil;
 		m_snapEnable = YES;
 		m_drawSelectionPath = YES;
 
-		m_minValidateSize = NSMakeSize(10, 10);
+		m_minValidateSize = [self.class DefaultMinValidateSize];
 
 		[self setStyle:aStyle];
 	}
@@ -2337,6 +2346,12 @@ static NSRect s_oldBounds;
 
 #pragma mark -
 #pragma mark As an NSObject
+
++ (void)initialize {
+	[super initialize];
+	s_minValidateSize = NSMakeSize(5, 5);
+}
+
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -2452,6 +2467,8 @@ static NSRect s_oldBounds;
 	[styleCopy release];
 
 	[copy setDrawSelectionPath:[self isDrawSelectionPath]];
+
+	[copy setMinValidateSize:[self minValidateSize]];
 
 	// ghost setting is copied but lock states are not
 
