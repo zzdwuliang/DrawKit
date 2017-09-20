@@ -290,6 +290,8 @@ static NSDictionary* s_interconversionTable = nil;
 		m_snapEnable = YES;
 		m_drawSelectionPath = YES;
 
+		m_minValidateSize = NSMakeSize(10, 10);
+
 		[self setStyle:aStyle];
 	}
 
@@ -583,6 +585,14 @@ static NSDictionary* s_interconversionTable = nil;
 - (void)setMouseDragOffset:(NSSize)offset
 {
 	m_mouseOffset = offset;
+}
+
+- (NSSize)minValidateSize {
+    return m_minValidateSize;
+}
+
+- (void)setMinValidateSize:(NSSize)size {
+    m_minValidateSize = size;
 }
 
 - (BOOL)mouseHasMovedSinceStartOfTracking

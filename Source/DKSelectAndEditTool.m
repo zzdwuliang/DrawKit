@@ -1145,7 +1145,6 @@ static void dragFunction_mouseUp(const void* obj, void* context)
 #pragma unused(aRect)
 
 	if ([self operationMode] == kDKEditToolSelectionMode){
-		NSLog(@"rect:%@", NSStringFromRect(aRect));
 		[self drawMarqueeInView:(DKDrawingView*)aView];
 	}
 	else if (mInProxyDrag && mProxyDragImage != nil) {

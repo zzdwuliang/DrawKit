@@ -1015,12 +1015,12 @@ finish:
 			break;
 
 		case NSLeftMouseUp:
-			// if the final point is in the same place as the first point, do a click-drag-click creation. Otherwise
-			// we've already dragged so finish.
+			// if the final point is almost in the same place as the first point, cancel the creation.
 
-			if(sqrt(pow((p.x-ip.x), 2) + pow((p.y-ip.y), 2)) > 5){
-				loop = NO;
+			if(sqrt(pow((p.x-ip.x), 2) + pow((p.y-ip.y), 2)) < fmin([self minValidateSize].width, [self minValidateSize].height)){
+				[self setPath:nil];
 			}
+			loop = NO;
 			break;
 
 		case NSMouseMoved:

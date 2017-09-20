@@ -37,6 +37,7 @@ to attach arbitrary data to any drawable object.
 	id<DKObjectStorage> mStorageRef; // ref to the object's storage (DKStorableObject protocol)
 	NSMutableDictionary* mUserInfo; // user info including metadata is stored in this dictionary
 	NSSize m_mouseOffset; // used to track where mouse was relative to bounds
+    NSSize m_minValidateSize;// min validate size when creating object
 	NSUInteger mZIndex; // used by the DKStorableObject protocol
 	BOOL m_visible; // YES if visible
 	BOOL m_locked; // YES if locked
@@ -243,6 +244,9 @@ to attach arbitrary data to any drawable object.
 
 - (NSSize)mouseDragOffset;
 - (void)setMouseDragOffset:(NSSize)offset;
+
+- (NSSize)minValidateSize;
+- (void)setMinValidateSize:(NSSize)size;
 
 - (BOOL)mouseHasMovedSinceStartOfTracking;
 - (void)setMouseHasMovedSinceStartOfTracking:(BOOL)moved;
