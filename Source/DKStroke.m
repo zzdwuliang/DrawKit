@@ -338,6 +338,9 @@
 
 - (void)renderPath:(NSBezierPath*)path
 {
+	if([self width] <= 0)
+		return;
+
 	// copy path as we are about to change many of its properties
 
 	NSBezierPath* pc;
