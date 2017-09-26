@@ -399,6 +399,19 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 		return minsize;
 }
 
+-(void)refreshSizeAndLocationWithoutUndo{
+	[self.undoManager disableUndoRegistration];
+
+	NSRect rect = [[self textAdornment] textLayoutRectForObject:self];
+	NSPoint location = self.location;
+	location.x += (rect.size.width - self.size.width)/2.0f;
+	location.y += (rect.size.height - self.size.height)/2.0f;
+	[self setLocation:location];
+	[self setSize:rect.size];
+
+	[self.undoManager enableUndoRegistration];
+}
+
 #pragma mark -
 #pragma mark - conversion to path / shape with text path
 
@@ -703,9 +716,9 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	if (m_editorRef == nil) {
 		LogEvent_(kReactiveEvent, @"starting edit of text shape");
 
-        if([view isTextBeingEdited]){
-            return;
-        }
+		if([view isTextBeingEdited]){
+			return;
+		}
 
 		NSSize maxsize = [self maxSize];
 		NSSize minsize = [self minSize];
@@ -756,36 +769,17 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	if (m_editorRef) {
 		LogEvent_(kReactiveEvent, @"finishing edit of text in shape");
 
-		if([m_editorRef textStorage].length > 0)
+		if(!mHasEndEditingBefore){
+			mHasEndEditingBefore = YES;
+			[self.undoManager disableUndoRegistration];
 			[self setText:[m_editorRef textStorage]];
+			[self.undoManager enableUndoRegistration];
+		}else{
+			[self setText:[m_editorRef textStorage]];
+		}
 
 		DKDrawingView* parent = (DKDrawingView*)[m_editorRef superview];
 		[parent endTextEditing];
-
-		//remove self if currently no text has been input
-
-		if([m_editorRef textStorage].length <= 0){
-			m_editorRef = nil;
-
-            // if no text has been input before, meaning we are operating a new created empty DKTextShape,
-            if(self.text.length <= 0){
-				id 	undoManager = [self.layer undoManager];
-				[undoManager disableUndoRegistration];
-				if([undoManager canUndo]){
-					// undo to delete the object if possible
-					[undoManager undo];
-				}else{
-					[self.layer removeObject:self];
-				}
-				[undoManager enableUndoRegistration];
-			}else{
-				// remove the object with undo registration enable
-				[self.layer removeObject:self];
-			}
-
-			return;
-		}
-
 		[self notifyVisualChange];
 		m_editorRef = nil;
 	}
@@ -1249,7 +1243,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	self = [super initWithStyle:aStyle];
 	if (self != nil) {
 		[self setTextAdornment:[self makeTextAdornment]];
+
+		[[self undoManager] disableUndoRegistration];
 		[self setText:[[self class] defaultTextString]];
+		[[self undoManager] enableUndoRegistration];
 
 #ifdef DRAWKIT_DEPRECATED
 		m_textRect = NSZeroRect;
@@ -1272,22 +1269,22 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 
 - (void)setLocation:(NSPoint)location {
 	//make it pixel perfect for better text display
-    location.x = ceil((float)location.x);
-    location.y = ceil((float)location.y);
-    [super setLocation:location];
+	location.x = ceil((float)location.x);
+	location.y = ceil((float)location.y);
+	[super setLocation:location];
 }
 
 - (void)setSize:(NSSize)size {
 	//make it pixel perfect for better text display
-    size.width = ceil((float)size.width);
-    size.height = ceil((float)size.height);
-    if((int)size.width % 2 == 1){
-        size.width += 1;
-    }
-    if((int)size.height % 2 == 1){
-        size.height += 1;
-    }
-    [super setSize:size];
+	size.width = ceil((float)size.width);
+	size.height = ceil((float)size.height);
+	if((int)size.width % 2 == 1){
+		size.width += 1;
+	}
+	if((int)size.height % 2 == 1){
+		size.height += 1;
+	}
+	[super setSize:size];
 }
 
 - (NSSize)extraSpaceNeeded
@@ -1334,8 +1331,14 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 			[[self textAdornment] setGreeking:kDKGreekingByLineRectangle];
 			[mTextAdornment render:self];
 			[[self textAdornment] setGreeking:saveGreek];
-		} else
+		} else{
 			[mTextAdornment render:self];
+		}
+
+		// draw the dash selection bound if no text has been input
+		if(![self isSelected] && self.text.length <= 0 && !NSEqualSizes(NSZeroSize, self.size)){
+			[self drawSelectionPath:[NSBezierPath bezierPathWithRect:self.bounds]];
+		}
 	}
 }
 
@@ -1580,23 +1583,6 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	[super styleDidChange:note];
 }
 
-- (void)setContainer:(id <DKDrawableContainer>)aContainer {
-	[super setContainer:aContainer];
-
-	if(self.text.length > 0 && aContainer){
-		[self.undoManager disableUndoRegistration];
-
-		NSRect rect = [[self textAdornment] textLayoutRectForObject:self];
-		NSPoint location = self.location;
-		location.x += (rect.size.width - self.size.width)/2.0f;
-		location.y += (rect.size.height - self.size.height)/2.0f;
-		[self setLocation:location];
-		[self setSize:rect.size];
-
-		[self.undoManager enableUndoRegistration];
-	}
-}
-
 #pragma mark -
 #pragma mark As an NSObject
 - (void)dealloc
@@ -1781,10 +1767,10 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 	NSPoint p = m_editorRef.frame.origin;
 	NSSize s = m_editorRef.frame.size;
 
-    [[self.layer undoManager] disableUndoRegistration];
+	[[self.layer undoManager] disableUndoRegistration];
 	[self setLocation:NSMakePoint( p.x+s.width/2.0f, p.y+s.height/2.0f)];
 	[self setSize:NSMakeSize(s.width, s.height)];
-    [[self.layer undoManager] enableUndoRegistration];
+	[[self.layer undoManager] enableUndoRegistration];
 }
 
 //- (BOOL)textView:(NSTextView*)tv doCommandBySelector:(SEL)selector
@@ -1833,13 +1819,6 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 			if (!([[self undoManager] isUndoing] || [[self undoManager] isRedoing]))
 				[self mutateStyle];
 
-			if([keypath isEqualToString:@"label"]){
-                NSAttributedString * newValue = [change objectForKey:NSKeyValueChangeNewKey];
-                NSAttributedString * oldValue = [change objectForKey:NSKeyValueChangeOldKey];
-                if([newValue.string isEqualToString:@""] || [oldValue.string isEqualToString:@""])
-                    return;
-            }
-
 			[[[self undoManager] prepareWithInvocationTarget:self] changeKeyPath:keypath
 																		ofObject:object
 																		 toValue:[change objectForKey:NSKeyValueChangeOldKey]];
@@ -1869,6 +1848,11 @@ static NSString* sDefault_string = @"Double-click to edit this text";
 			[[self undoManager] setActionName:[GCObservableObject actionNameForKeyPath:keypath
 																			  objClass:[object class]]];
 	}
+
+	if(wasChanged){
+		[self refreshSizeAndLocationWithoutUndo];
+	}
+
 	[self updateFontPanel];
 	[self notifyVisualChange];
 }

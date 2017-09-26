@@ -31,7 +31,7 @@ Text shapes are shapes that draw text.
 	DKTextAdornment* mTextAdornment; // handles the text storage, layout and rendering of the text
 	NSTextView* m_editorRef; // when editing, a reference to the editor view
 	BOOL mIsSettingStyle; // flags text being set by style
-
+	BOOL mHasEndEditingBefore;
 #ifdef DRAWKIT_DEPRECATED
 	NSTextStorage* m_text; // the text
 	NSRect m_textRect; // rect of the text relative to the final shape
