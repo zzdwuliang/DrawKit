@@ -357,8 +357,7 @@ static NSColor* sInfoWindowColour = nil;
 					ofType:type
 					 angle:[self angle]
 		   highlightColour:[NSColor whiteColor]
-			knobStrokeColor:[NSColor blackColor]];
-//		   knobStrokeColor:[[self style] strokeColour]];
+		   knobStrokeColor:[[self style] strokeColour]];
 
 }
 
