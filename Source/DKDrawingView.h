@@ -264,6 +264,8 @@ typedef enum {
  */
 - (BOOL)isTextBeingEdited;
 
+- (void)setTextBeingEdited:(BOOL)edited;
+
 // ruler stuff
 
 /** @brief Set a ruler marker to a given position

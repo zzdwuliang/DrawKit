@@ -699,6 +699,11 @@ static Class s_textEditorClass = Nil;
 	return mTextEditViewInUse;
 }
 
+- (void)setTextBeingEdited:(BOOL)edited
+{
+    mTextEditViewInUse = edited;
+}
+
 #pragma mark -
 #pragma mark - ruler stuff
 
