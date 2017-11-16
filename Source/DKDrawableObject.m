@@ -876,19 +876,29 @@ static NSSize s_minValidateSize;
 {
 	if(![self isDrawSelectionPath])return;
 
+	NSColor *colorToDraw = nil;
 	if ([self locked])
-		[[NSColor lightGrayColor] set];
+		colorToDraw = [NSColor lightGrayColor];
 	else {
 		NSColor* strokeColour = nil;
 		NSArray* rs = [self.style renderersOfClass:[DKStroke class]];
 		DKStroke *stroke = [rs lastObject];
 		if(stroke){
 			strokeColour = stroke.colour;
-			[strokeColour set];
+			colorToDraw = strokeColour;
 		}else{
-			[[[self layer] selectionColour] set];
+			colorToDraw = [[self layer] selectionColour];
 		}
 	}
+
+	[self drawSelectionPath:path withColor:colorToDraw];
+}
+
+- (void)drawSelectionPath:(NSBezierPath*)path withColor:(NSColor*)color
+{
+	if(![self isDrawSelectionPath])return;
+
+	[color set];
 
 	NSInteger dashCount = 0;
 	CGFloat dashArray[3];

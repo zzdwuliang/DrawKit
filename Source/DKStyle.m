@@ -468,6 +468,7 @@ static BOOL sSubstitute = NO;
 {
 	if (![self locked]) {
 		[[[self undoManager] prepareWithInvocationTarget:self] setTextAttributes:[self textAttributes]];
+		[[self undoManager] setActionName:@"setTextAttributes"];
 		[self notifyClientsBeforeChange];
 		NSDictionary* temp = [attrs copy];
 		[m_textAttributes release];

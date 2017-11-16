@@ -326,6 +326,7 @@ to attach arbitrary data to any drawable object.
 - (void)drawGhostedContent;
 - (void)drawSelectedState;
 - (void)drawSelectionPath:(NSBezierPath*)path;
+- (void)drawSelectionPath:(NSBezierPath*)path withColor:(NSColor*)color;
 
 // refresh notifiers:
 
