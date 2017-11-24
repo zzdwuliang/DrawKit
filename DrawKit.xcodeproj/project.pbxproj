@@ -1612,7 +1612,7 @@
 				GCC_PREFIX_HEADER = Source/DKDrawKit_Prefix.pch;
 				HEADER_SEARCH_PATHS = "ThirdParty/**";
 				INFOPLIST_FILE = Source/DrawKitInfo.plist;
-				INSTALL_PATH = "$(HOME)/Library/Frameworks";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				NSZombieEnabled = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.drawkit;
 				PRODUCT_NAME = DKDrawKit;
